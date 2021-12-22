@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Tag, Follow, Ingredient, Amount, Recipe, Selected
+from .models import Tag, Follow, Ingredient, Amount, Recipe, Favorite
 from .forms import TagForm
 
 EMPTY = '-пусто-'
@@ -48,4 +48,4 @@ admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Amount, AmountAdmin)
 admin.site.register(Follow, FollowAdmin)
-admin.site.register(Selected, SelectedAdmin)
+admin.site.register(Favorite, SelectedAdmin)

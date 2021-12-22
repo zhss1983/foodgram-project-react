@@ -28,7 +28,7 @@ from django.shortcuts import get_object_or_404
 
 
 from .models import Follow, Tag, Recipe, Ingredient
-from .serializers import FollowSerializer, TagSerializer, RecipeSerializer, IngredientSerializer, UsersSerializer, FollowEditSerializer
+from .serializers import TagSerializer, RecipeSerializer, IngredientSerializer, UsersSerializer, FollowEditSerializer, FollowSerializer
 from .pagination import LimitPageNumberPagination
 
 from users.models import User
@@ -43,13 +43,18 @@ class UsersViewSet(ReadOnlyModelViewSet):
     pagination_class = LimitPageNumberPagination
 
     @action(detail=False,
-            permission_classes=[IsAuthenticated],
-            methods=['GET'])
+#            permission_classes=[IsAuthenticated],
+            methods=['GET'],
+            url_path='me')
     def me(self, request, *args, **kwargs):
-        serializer = UsersSerializer(
-            request.user, data=request.data, partial=True)
-        serializer.is_valid()
+        serializer = self.get_serializer(request.user)
         return Response(serializer.data)
+
+    #def me(self, request, *args, **kwargs):
+    #    serializer = UsersSerializer(
+    #        request.user, data=request.data, partial=True)
+    #    serializer.is_valid()
+    #    return Response(serializer.data)
 
 
 class NameSearchFilter(SearchFilter):
@@ -73,47 +78,67 @@ class IngredientViewSet(ReadOnlyModelViewSet):
     search_fields = ('^name',)
 
 
-class RecipeViewSet(ReadOnlyModelViewSet):
-    permission_classes = (AllowAny,)
-    serializer_class = RecipeSerializer
-    queryset = Recipe.objects.all()
-
-
-class SubscribeViewSet(ModelViewSet): # ListModelMixin, CreateModelMixin, DestroyModelMixin, RetrieveModelMixin, GenericViewSet
-    permission_classes = (IsAuthenticated,)
-    serializer_class = FollowSerializer
-    lookup_field = 'pk'
-    lookup_value_regex = '\d+/subscribe'
-    #queryset = Follow
-
-    def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        # Perform the lookup filtering.
-        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-
-        assert lookup_url_kwarg in self.kwargs, (
-            'Expected view %s to be called with a URL keyword argument '
-            'named "%s". Fix your URL conf, or set the `.lookup_field` '
-            'attribute on the view correctly.' %
-            (self.__class__.__name__, lookup_url_kwarg)
-        )
-
-        kwarg = self.kwargs[lookup_url_kwarg].split('/')[0]
-
-        filter_kwargs = {self.lookup_field: kwarg}
-        obj = get_object_or_404(queryset, **filter_kwargs)
-
-        # May raise a permission denied
-        self.check_object_permissions(self.request, obj)
-
-        return obj
-
-    def get_queryset(self):
-        return Follow.objects.filter(user=self.request.user)
-
-
-class FollowEditViewSet(GenericViewSet):
+class SubscribeViewSet(GenericViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = FollowEditSerializer
-    #serializer_class = UsersSerializer
+    lookup_field = 'id'
+    lookup_value_regex = '\d+'
+    queryset = User
+    classmethod = ('GET', 'DELETE')
+    pagination_class = LimitPageNumberPagination
+
+    def get_queryset(self):
+        return User.objects.filter(following__user=self.request.user)
+
+    @action(detail=False,
+            #permission_classes=[IsAuthenticated],
+            methods=['GET'],
+            url_path='subscribe')
+    def follow_list(self, request, *args, **kwargs):
+        recipes_limit = self.get_recipes_limit()
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+#        if page is not None:
+#            serializer = self.get_serializer(page, many=True)
+#            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(page, many=True) # , limit=recipes_limit
+        return self.get_paginated_response(serializer.data)
+        #serializer = self.get_serializer(queryset, many=True) # , limit=recipes_limit
+        #return Response(serializer.data)
+
+    @action(detail=True,
+            permission_classes=[IsAuthenticated],
+            methods=['GET', 'DELETE'],
+            url_path='subscribe')
+    def follow(self, request, *args, **kwargs):
+        author = get_object_or_404(User, pk=self.get_id())
+        if request.method == 'GET':
+            if author == self.request.user:
+                return Response({"errors": "Ошибка подписки"}, status=status.HTTP_400_BAD_REQUEST)
+            instance, created = Follow.objects.get_or_create(user=self.request.user, author=author)
+            if not created:
+                return Response({"errors": "Ошибка подписки"}, status=status.HTTP_400_BAD_REQUEST)
+            serializer = self.get_serializer(instance.author)
+            #headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)#, headers=headers)
+        elif request.method == 'DELETE':
+            instance = Follow.objects.filter(user=self.request.user, author=author)
+            if not instance.exists():
+                return Response({"errors": "Ошибка отписки"}, status=status.HTTP_204_NO_CONTENT)
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+    def get_id(self):
+        return self.kwargs[self.lookup_field]#.split('/')[0]
+
+    def get_recipes_limit(self):
+        return self.request.GET.get('recipes_limit', 3)
+
+
+class RecipeViewSet(ModelViewSet):
+    permission_classes = (AllowAny,)
+    serializer_class = RecipeSerializer
+    queryset = Recipe
+    pagination_class = LimitPageNumberPagination
+

@@ -143,7 +143,7 @@ class Recipe(models.Model):
             )
         return super().save(*args, **kwargs)
 
-class Selected(models.Model):
+class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

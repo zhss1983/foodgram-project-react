@@ -8,7 +8,7 @@ api_router_v1 = DefaultRouter()
 
 #  http://localhost/api/tags/
 #  http://localhost/api/tags/{id}/
-api_router_v1.register('tags', TagViewSet, basename='tags')
+api_router_v1.register(r'tags', TagViewSet, basename='tags')
 
 #  http://localhost/api/ingredients/
 #  http://localhost/api/ingredients/{id}/
@@ -16,12 +16,10 @@ api_router_v1.register('tags', TagViewSet, basename='tags')
 api_router_v1.register(r'ingredients', IngredientViewSet, basename='ingredients')
 
 #  http://localhost/api/users/subscriptions/
-# api_router_v1.register('users/subscribe', FollowListViewSet, basename='subscriptions')
-
 #  http://localhost/api/users/{pk}/subscribe/
-api_router_v1.register('users1', SubscribeViewSet, basename='subscribe')
+api_router_v1.register(r'users', SubscribeViewSet, basename='subscribe')
 
-api_router_v1.register('users', UsersViewSet, basename='users')
+api_router_v1.register(r'users', UsersViewSet, basename='users')
 
 #  http://localhost/api/recipes/
 #  http://localhost/api/recipes/{id}/

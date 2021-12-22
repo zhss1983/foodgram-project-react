@@ -3,7 +3,7 @@ from rest_framework.serializers import (
     CurrentUserDefault, ModelSerializer, SlugRelatedField, SerializerMethodField, ValidationError)
 from rest_framework.validators import UniqueTogetherValidator
 
-from .models import Follow, Tag, Ingredient, Recipe
+from .models import Follow, Tag, Ingredient, Recipe, Favorite
 from users.models import User
 
 VALIDATION_ERROR_MESSAGE = ('Отсутствует обязательное поле в теле запроса или'
@@ -41,13 +41,14 @@ class RecipeSerializer(ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('__all__', 'is_favorited', 'is_in_shopping_cart')
+        #fields = ('author', 'ingredients', 'tags', 'is_favorited', 'is_in_shopping_cart')
+        fields = '__all__'
         #fields = ('id', 'tags', 'author', 'ingredients', 'name', 'image',
         #          'text', 'cooking_time', 'is_favorited',
         #          'is_in_shopping_cart')
 
     def get_is_favorited(self, obj):
-        return obj.selected
+        return False #obj.selected
 
     def get_is_in_shopping_cart(self, obj):
         return False  #  Follow.objects.filter(user=obj).exists()
@@ -59,33 +60,31 @@ class RecipeSerializer(ModelSerializer):
             raise ValidationError('This field must be >= 1.')
 
 
-
+class RecipeFollowers(ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
 
 class FollowEditSerializer(UsersSerializer):
-    #pass
-    #recipes = RecipeSerializer(many=True, read_only=True)
-    #recipes = SerializerMethodField()
-    recipes = RecipeSerializer()
+    recipes = RecipeFollowers()
     recipes_count = SerializerMethodField()
 
     def get_recipes(self, obj):
-        return Recipe.objects.filter(author=obj)
+        return Recipe.objects.filter(author=obj)#[:self.limit]
 
     def get_recipes_count(self, obj):
+        #return Recipe.objects.filter(author=obj).count()
         return obj.recipes.count()
-
-#    def get_recipes_count(self, obj):
-#        return Recipe.objects.filter(author=obj).count()
 
     class Meta(UsersSerializer.Meta):
         fields = (*UsersSerializer.Meta.fields, 'recipes', 'recipes_count')
-#        fields = (*UsersSerializer.Meta.fields, 'recipes_count')
+        model = User
 
 class FollowSerializer(ModelSerializer):
-    #user = SlugRelatedField(
+    # user = SlugRelatedField(
     #    slug_field='username', queryset=User.objects.all())
     # author = UsersSerializer(read_only=True)
-    author = FollowEditSerializer(read_only=True)
+    author = FollowEditSerializer()
 
     class Meta:
         fields = ('author',)
