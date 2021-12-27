@@ -1,9 +1,10 @@
 from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import UserManager
 
 from .constants import ADMIN
 
 
-class CustomUserManager(BaseUserManager):
+class CustomUserManager(BaseUserManager):#BaseUserManager): UserManager):
     """
     В методе create_superuser() присваиваем
     дефолное значение поля 'role' = 'admin'.

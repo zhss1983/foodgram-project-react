@@ -1,3 +1,8 @@
+import base64
+
+from rest_framework import permissions
+from rest_framework.permissions import (SAFE_METHODS, BasePermission,
+                                        IsAuthenticatedOrReadOnly)
 from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.auth.decorators import login_required
 from collections import OrderedDict
@@ -23,42 +28,45 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import (
     GenericViewSet, ModelViewSet, ReadOnlyModelViewSet, ViewSet, ViewSetMixin)
-
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.shortcuts import get_object_or_404
 
 
-from .models import Follow, Tag, Recipe, Ingredient
-from .serializers import TagSerializer, RecipeSerializer, IngredientSerializer, UsersSerializer, FollowEditSerializer, FollowSerializer
+from .models import Follow, Tag, Recipe, Ingredient, Amount
+from .serializers import TagSerializer, RecipeSerializer, RecipeSaveSerializer, IngredientSerializer, UseridSerializer, FollowEditSerializer, FollowSerializer
 from .pagination import LimitPageNumberPagination
+from .permissions import AdminOrReadOnly, RegistreUserPermission
+
 
 from users.models import User
 
 
-class UsersViewSet(ReadOnlyModelViewSet):
-    permission_classes = (IsAuthenticated,)
-    filter_backends = (SearchFilter,)
-    search_fields = ('=username',)
-    serializer_class = UsersSerializer
+class UsersViewSet(GenericViewSet): #ReadOnlyModelViewSet):GenericViewSet
+    permission_classes = (AdminOrReadOnly, RegistreUserPermission, )  # (RegistreUserPermission, )
+    filter_backends = (SearchFilter, )
+    search_fields = ('=username', )
+    serializer_class = UseridSerializer
     queryset = User.objects.all()
     pagination_class = LimitPageNumberPagination
+    metadata_class = ('get',)
 
     @action(detail=False,
-#            permission_classes=[IsAuthenticated],
+            permission_classes=[IsAuthenticated],
             methods=['GET'],
             url_path='me')
     def me(self, request, *args, **kwargs):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
 
-    #def me(self, request, *args, **kwargs):
-    #    serializer = UsersSerializer(
-    #        request.user, data=request.data, partial=True)
-    #    serializer.is_valid()
-    #    return Response(serializer.data)
+#    def get_serializer_class(self):
+#        if self.request.method in SAFE_METHODS:
+#            return UsersSerializerSubscribe
+#        return UsersSerializer
 
 
 class NameSearchFilter(SearchFilter):
     search_param = 'name'
+
 
 class TagViewSet(ReadOnlyModelViewSet):  # (ListModelMixin, GenericViewSet):
     permission_classes = (AllowAny,)
@@ -83,7 +91,7 @@ class SubscribeViewSet(GenericViewSet):
     serializer_class = FollowEditSerializer
     lookup_field = 'id'
     lookup_value_regex = '\d+'
-    queryset = User
+#    queryset = User
     classmethod = ('GET', 'DELETE')
     pagination_class = LimitPageNumberPagination
 
@@ -95,15 +103,14 @@ class SubscribeViewSet(GenericViewSet):
             methods=['GET'],
             url_path='subscribe')
     def follow_list(self, request, *args, **kwargs):
-        recipes_limit = self.get_recipes_limit()
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
 #        if page is not None:
 #            serializer = self.get_serializer(page, many=True)
 #            return self.get_paginated_response(serializer.data)
-        serializer = self.get_serializer(page, many=True) # , limit=recipes_limit
+        serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)
-        #serializer = self.get_serializer(queryset, many=True) # , limit=recipes_limit
+        #serializer = self.get_serializer(queryset, many=True)
         #return Response(serializer.data)
 
     @action(detail=True,
@@ -132,13 +139,16 @@ class SubscribeViewSet(GenericViewSet):
     def get_id(self):
         return self.kwargs[self.lookup_field]#.split('/')[0]
 
-    def get_recipes_limit(self):
-        return self.request.GET.get('recipes_limit', 3)
-
 
 class RecipeViewSet(ModelViewSet):
     permission_classes = (AllowAny,)
     serializer_class = RecipeSerializer
-    queryset = Recipe
+    queryset = Recipe.objects.all()
     pagination_class = LimitPageNumberPagination
+
+    def get_serializer_class(self):
+        if self.request.method == SAFE_METHODS:
+            return RecipeSerializer
+        else:
+            return RecipeSaveSerializer
 

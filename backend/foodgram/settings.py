@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
+#from users.djoser import SIMPLE_JWT, DJOSER
 
 from datetime import timedelta
 from dotenv import load_dotenv
 from pathlib import Path
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -156,14 +158,13 @@ REST_FRAMEWORK = {
     #    'rest_framework_simplejwt.authentication.JWTAuthentication',
     #),
     #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'users.pagination.LimitPageNumberPagination',
     'PAGE_SIZE': 6,
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
 }
-
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=100),
     'AUTH_HEADER_TYPES': ('Token',),
@@ -174,13 +175,16 @@ DJOSER = {
 #    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
 #    'ACTIVATION_URL': '#/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': False,
-    'SERIALIZERS': {},
+    'SERIALIZERS': {
+        'user_create': 'users.serializers.UserCreateSerializer',
+        'current_user': 'api.serializers.UseridSerializer',
+        'user': 'api.serializers.UseridSerializer'
+    },
 #    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
 #    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
 #    'ACTIVATION_URL': '#/activate/{uid}/{token}',
 #    'SEND_ACTIVATION_EMAIL': True,
-#    'SERIALIZERS': {},
-    #'LOGIN_FIELD': 'email',
+    'LOGIN_FIELD': 'email',
 }
 
 # Static files (CSS, JavaScript, Images)
