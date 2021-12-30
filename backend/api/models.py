@@ -1,7 +1,6 @@
 from django.db import models
 from django.db.models import F, Q
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 
 from users.models import User
 
@@ -10,19 +9,21 @@ class Tag(models.Model):
     name = models.CharField(
         _('Имя тега'),
         max_length=200,
-        unique=True
+        unique=True,
+        blank=False,
+        null=False
     )
     color = models.CharField(
         _('Цвет тега'),
         max_length=7,
-        null=True,
-        blank=True
+        blank=False,
+        null=False
     )
     slug = models.SlugField(
-        _('Адрес тега'),
+        verbose_name=_('Адрес тега'),
         unique=True,
-        null=True,
-        blank=True
+        blank=False,
+        null=False
     )
 
     class Meta:
@@ -36,10 +37,16 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(
-        _('Название ингредиента'),
+        verbose_name=_('Название ингредиента'),
         max_length=200,
+        blank=False,
+        null=False
     )
-    measurement_unit = models.CharField(max_length=50)
+    measurement_unit = models.CharField(
+        max_length=50,
+        blank=False,
+        null=False
+    )
 
     class Meta:
         verbose_name = _('Ингредиент')
@@ -52,13 +59,6 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-#    tags = models.ManyToManyField(
-#        Tag,
-#        verbose_name=_('Тэги'),
-#        #related_name=_('recipes'),
-##        blank=False,
-##        null=False
-#    )
     author = models.ForeignKey(
         User,
         verbose_name=_('Автор'),
@@ -68,7 +68,7 @@ class Recipe(models.Model):
         null=False
     )
     name = models.CharField(
-        _('Название блюда'),
+        _('Название'),
         max_length=200,
         unique=True,
         blank=False,
@@ -76,16 +76,35 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         upload_to=_('Recipe/'),
-        verbose_name=_('Изображение блюда'),
-        blank=True,
-        null=True,
-        help_text=_('Загрузите изображение. Оптимальный размер xxx*yyy px.'),
-    )
-    text = models.TextField(
-        verbose_name=_('Текст рецепта'),
+        verbose_name=_('Картинка'),
+        help_text=_('Загрузите изображение'),
         blank=False,
         null=False
     )
+    text = models.TextField(
+        verbose_name=_('Текстовое описание'),
+        blank=False,
+        null=False
+    )
+    cooking_time = models.IntegerField(
+        verbose_name=_('Время приготовления, мин'),
+        default=1,
+        blank=False,
+        null=False
+    )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Дата публикации'),
+    )
+
+    #tags = models.ManyToManyField(
+    #    Tag,
+    #    verbose_name=_('Тэги'),
+    #    #related_name=_('recipes'),
+    #    #blank=False,
+    #    #null=False
+    #)
+
     #ingredients = models.ManyToManyField(
     #    Ingredient,
     #    through='Amount',
@@ -99,19 +118,26 @@ class Recipe(models.Model):
     #    #db_table=None,
     #    #swappable=True
     #)
-    cooking_time = models.IntegerField(
-        verbose_name=_('Время приготовления'),
-        default=1
-    )
+
+    # При ужарки и уварки происходит изменение массы, надо предусмотреть поле
+    # для заполнения данного параметра. Задел на будущее.
+#    food_yield = models.DecimalField(
+#        verbose_name=_('Размер порции'),
+#        max_digits=7,
+#        decimal_places=2,
+#        default=1,
+#        blank=False,
+#        null=False
+#    )
 
     class Meta:
         verbose_name = _('Рецепт')
         verbose_name_plural = _('Рецепты')
-        ordering = ('name', )  # ('-pk', )
+        ordering = ('-pk',)
         constraints = (
             models.CheckConstraint(
                 check=Q(cooking_time__gte=1),
-                name='cooking_time_more_or_equal_minute',
+                name=_('cooking_time_more_or_equal_minute'),
             ),
         )
 
@@ -121,17 +147,6 @@ class Recipe(models.Model):
     def delete(self, *args, **kwargs):
         self.image.delete()
         return super().delete(*args, **kwargs)
-
-#    def save(self, *args, force_insert=False, force_update=False, using=None,
-#             update_fields=None, **kwargs):
-#        if not force_insert and (
-#                force_update or update_fields) and ('image' in update_fields):
-#            print(settings.MEDIA_ROOT / self.image.upload_to / self.image.path)
-#            self.image.delete()
-#        return super().save(*args, **kwargs)
-
-#    def save(self, *args, **kwargs):
-#        return super().save(*args, **kwargs)
 
 
 class TagRecipe(models.Model):
@@ -155,6 +170,12 @@ class TagRecipe(models.Model):
         verbose_name = _('Тэг рецепта')
         verbose_name_plural = _('Тэги рецептов')
         ordering = ('recipe__name', 'tag__name', )
+        constraints = (
+            models.UniqueConstraint(
+                fields=('tag', 'recipe'),
+                name=_('unique_tag_recipe_pair'),
+            ),
+        )
 
 
 class Amount(models.Model):
@@ -178,22 +199,30 @@ class Amount(models.Model):
         on_delete=models.CASCADE,
         related_name=_('ingredients'),
     )
+    # Количество порций. Из-за того что стандартной массы с рецепта может быть
+    # слишком мало или много пользователь может приготовить другой объём.
+    # Множитель для рецепта в корзине. Заготовка на будущее.
+#    portions = models.DecimalField(
+#        verbose_name=_('Количество порций'),
+#        max_digits=7,
+#        decimal_places=2,
+#        default=1,
+#        blank=False,
+#        null=False
+#    )
 
     def __str__(self):
-        return f'{self.ingredient.name}, {self.amount} {self.ingredient.measurement_unit}'
+        return (f'{self.ingredient.name}, {self.amount} '
+                f'{self.ingredient.measurement_unit}')
 
     class Meta:
         verbose_name = _('Количество')
         verbose_name_plural = _('Количество')
         ordering = ('recipe__name', 'ingredient__name', )
         constraints = (
-#            models.UniqueConstraint(
-#                fields=('amount', 'ingredient'),
-#                name='unique_amount_ingredient',
-#            ),
             models.CheckConstraint(
                 check=Q(amount__gt=0),
-                name='amount_positive',
+                name=_('amount_positive'),
             ),
         )
 
@@ -211,10 +240,21 @@ class Favorite(models.Model):
         verbose_name=_('Рецепт'),
         related_name='selected',
     )
+
     class Meta:
         verbose_name = _('Избранный рецепт')
         verbose_name_plural = _('Избранные рецепты')
         ordering = ('user__username', 'recipe__name', )
+        constraints = (
+            models.UniqueConstraint(
+                fields=('user', 'recipe'),
+                name=_('Favorite_unique_user_recipe_pair'),
+            ),
+        )
+
+    def __str__(self):
+        return f'{self.user} -> {self.recipe}'
+
 
 
 class Follow(models.Model):
@@ -232,16 +272,40 @@ class Follow(models.Model):
     )
 
     class Meta:
-        verbose_name = _('Подписка')
-        verbose_name_plural = _('Подписки')
+        verbose_name = _('Подписка на автора')
+        verbose_name_plural = _('Подписки на авторов')
         ordering = ('user__username', 'author__username')
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'author'),
-                name='unique_user_author',
+                name=_('Follow_unique_user_author'),
             ),
             models.CheckConstraint(
                 check=~Q(user=F('author')),
-                name='name_not_author',
+                name=_('name_not_author'),
             )
         )
+
+    def __str__(self):
+        return f'{self.user} -> {self.author}'
+
+
+class Trolley(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='trolley')
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name='trolley')
+
+    class Meta:
+        verbose_name = _('Корзина')
+        verbose_name_plural = _('Корзины')
+        ordering = ('user__username', 'recipe__name', )
+        constraints = (
+            models.UniqueConstraint(
+                fields=('user', 'recipe'),
+                name=_('Trolley_unique_user_recipe_pair') ,
+            ),
+        )
+
+    def __str__(self):
+        return f'{self.pk}: {self.user}, {self.recipe}'

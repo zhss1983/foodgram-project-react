@@ -1,1 +1,0 @@
-[{"model": "api.follow", "pk": 1, "fields": {"user": 2, "author": 3}}, {"model": "api.follow", "pk": 2, "fields": {"user": 2, "author": 4}}, {"model": "api.follow", "pk": 3, "fields": {"user": 2, "author": 5}}, {"model": "api.follow", "pk": 4, "fields": {"user": 3, "author": 4}}, {"model": "api.follow", "pk": 28, "fields": {"user": 2, "author": 6}}]

@@ -1,14 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import UserManager
-
-from .constants import ADMIN
 
 
-class CustomUserManager(BaseUserManager):#BaseUserManager): UserManager):
-    """
-    В методе create_superuser() присваиваем
-    дефолное значение поля 'role' = 'admin'.
-    """
+class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         email = self.normalize_email(email)
         extra_fields.setdefault('is_staff', True)
@@ -19,5 +12,4 @@ class CustomUserManager(BaseUserManager):#BaseUserManager): UserManager):
 
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('role', ADMIN)
         return self.create_user(email, password, **extra_fields)
