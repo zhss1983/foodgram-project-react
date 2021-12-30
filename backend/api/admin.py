@@ -11,7 +11,7 @@ EMPTY = '-пусто-'
 class TagAdmin(admin.ModelAdmin):
     form = TagForm
     list_display = ('pk', 'name', 'color', 'slug')
-    prepopulated_fields = {'slug': ('name',)}
+    prepopulated_fields = {'slug': ('name', )}
     search_fields = ('name', 'slug')
     empty_value_display = EMPTY
 
@@ -37,7 +37,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
 class AmountAdmin(admin.ModelAdmin):
     list_display = ('pk', 'ingredient', 'amount', 'recipe')
-    search_fields = ('ingredient',)
+    search_fields = ('ingredient', )
     empty_value_display = EMPTY
 
 

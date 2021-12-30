@@ -27,7 +27,7 @@ class UsersViewSet(GenericViewSet):
     serializer_class = UseridSerializer
     queryset = User.objects.all()
     pagination_class = LimitPageNumberPagination
-    metadata_class = ('GET',)
+    metadata_class = ('GET', )
 
     @action(detail=False,
             permission_classes=[IsAuthenticated],
@@ -39,27 +39,27 @@ class UsersViewSet(GenericViewSet):
 
 
 class TagViewSet(ModelViewSet):
-    permission_classes = (AdminOrReadOnly,)
-    filter_backends = (SearchFilter,)
-    search_fields = ('=name',)
+    permission_classes = (AdminOrReadOnly, )
+    filter_backends = (SearchFilter, )
+    search_fields = ('=name', )
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
     pagination_class = None
 
 
 class IngredientViewSet(ModelViewSet):
-    permission_classes = (AdminOrReadOnly,)
+    permission_classes = (AdminOrReadOnly, )
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
     filter_backends = (NameSearchFilter, )
     pagination_class = None
-    search_fields = ('^name',)
+    search_fields = ('^name', )
 
 
 class SubscribeViewSet(GenericViewSet):
-    permission_classes = (EditAccessOrReadOnly,)
+    permission_classes = (EditAccessOrReadOnly, )
     serializer_class = FollowEditSerializer
-    lookup_value_regex = '\d+'
+    lookup_value_regex = r'\d+'
     pagination_class = LimitPageNumberPagination
 
     def get_queryset(self):
@@ -113,7 +113,7 @@ class SubscribeViewSet(GenericViewSet):
 
 
 class RecipeViewSet(ModelViewSet):
-    permission_classes = (EditAccessOrReadOnly,)
+    permission_classes = (EditAccessOrReadOnly, )
     serializer_class = RecipeSerializer
     pagination_class = LimitPageNumberPagination
 

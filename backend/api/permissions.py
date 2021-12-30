@@ -4,9 +4,7 @@ from rest_framework.permissions import (
 
 
 class IsAdmin(permissions.BasePermission):
-    """Даёт разрещение аутентифицированному пользователю
-    со статусом админа.
-    """
+    """Даёт разрещение только админу."""
 
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.is_superuser
@@ -16,9 +14,7 @@ class IsAdmin(permissions.BasePermission):
 
 
 class EditAccessOrReadOnly(IsAuthenticatedOrReadOnly):
-    """
-    Объект уровня доступа. Доступ только для автора, модератора и выше.
-    """
+    """Доступ только для чтения или автора или админа."""
 
     def has_object_permission(self, request, view, obj):
         safe = request.method in SAFE_METHODS
@@ -30,6 +26,7 @@ class EditAccessOrReadOnly(IsAuthenticatedOrReadOnly):
 
 
 class RegistrationUserPermission(permissions.BasePermission):
+    """Даёт особые права на регистрацию пользователя."""
 
     def has_permission(self, request, view):
         safe = request.method in SAFE_METHODS
@@ -48,9 +45,7 @@ class RegistrationUserPermission(permissions.BasePermission):
 
 
 class AdminOrReadOnly(BasePermission):
-    """
-    Объект уровня доступа. Доступ только для автора и администратора.
-    """
+    """Доступ только для чтения или для администратора."""
 
     def has_permission(self, request, view):
         safe = request.method in SAFE_METHODS

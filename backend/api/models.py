@@ -29,7 +29,7 @@ class Tag(models.Model):
     class Meta:
         verbose_name = _('Тег')
         verbose_name_plural = _('Теги')
-        ordering = ('name',)
+        ordering = ('name', )
 
     def __str__(self):
         return self.name
@@ -51,8 +51,8 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = _('Ингредиент')
         verbose_name_plural = _('Ингредиенты')
-        unique_together = ('name', 'measurement_unit',)
-        ordering = ('name',)
+        unique_together = ('name', 'measurement_unit')
+        ordering = ('name', )
 
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}'
@@ -97,15 +97,15 @@ class Recipe(models.Model):
         verbose_name=_('Дата публикации'),
     )
 
-    #tags = models.ManyToManyField(
+    #  tags = models.ManyToManyField(
     #    Tag,
     #    verbose_name=_('Тэги'),
     #    #related_name=_('recipes'),
     #    #blank=False,
     #    #null=False
-    #)
+    #  )
 
-    #ingredients = models.ManyToManyField(
+    #  ingredients = models.ManyToManyField(
     #    Ingredient,
     #    through='Amount',
     #    #related_name=_('ingredients'),
@@ -117,23 +117,23 @@ class Recipe(models.Model):
     #    #db_constraint=True,
     #    #db_table=None,
     #    #swappable=True
-    #)
+    #  )
 
-    # При ужарки и уварки происходит изменение массы, надо предусмотреть поле
-    # для заполнения данного параметра. Задел на будущее.
-#    food_yield = models.DecimalField(
-#        verbose_name=_('Размер порции'),
-#        max_digits=7,
-#        decimal_places=2,
-#        default=1,
-#        blank=False,
-#        null=False
-#    )
+    #  При ужарки и уварки происходит изменение массы, надо предусмотреть поле
+    #  для заполнения данного параметра. Задел на будущее.
+    #    food_yield = models.DecimalField(
+    #        verbose_name=_('Размер порции'),
+    #        max_digits=7,
+    #        decimal_places=2,
+    #        default=1,
+    #        blank=False,
+    #        null=False
+    #    )
 
     class Meta:
         verbose_name = _('Рецепт')
         verbose_name_plural = _('Рецепты')
-        ordering = ('-pk',)
+        ordering = ('-pk', )
         constraints = (
             models.CheckConstraint(
                 check=Q(cooking_time__gte=1),
@@ -218,7 +218,7 @@ class Amount(models.Model):
     class Meta:
         verbose_name = _('Количество')
         verbose_name_plural = _('Количество')
-        ordering = ('recipe__name', 'ingredient__name', )
+        ordering = ('recipe__name', 'ingredient__name')
         constraints = (
             models.CheckConstraint(
                 check=Q(amount__gt=0),
@@ -244,7 +244,7 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = _('Избранный рецепт')
         verbose_name_plural = _('Избранные рецепты')
-        ordering = ('user__username', 'recipe__name', )
+        ordering = ('user__username', 'recipe__name')
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
@@ -254,7 +254,6 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f'{self.user} -> {self.recipe}'
-
 
 
 class Follow(models.Model):
@@ -299,11 +298,11 @@ class Trolley(models.Model):
     class Meta:
         verbose_name = _('Корзина')
         verbose_name_plural = _('Корзины')
-        ordering = ('user__username', 'recipe__name', )
+        ordering = ('user__username', 'recipe__name')
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
-                name=_('Trolley_unique_user_recipe_pair') ,
+                name=_('Trolley_unique_user_recipe_pair'),
             ),
         )
 

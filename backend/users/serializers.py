@@ -16,6 +16,7 @@ class UserCreateSerializer(UserCreateSerializer):
 
 
 class UseridSerializer(UserCreateSerializer):
+
     class Meta:
         model = User
         fields = tuple(User.REQUIRED_FIELDS) + (

@@ -10,7 +10,7 @@ from .default import get_param_value_serialize
 from .models import (
     Amount, Favorite, Follow, Ingredient, Recipe, Tag, TagRecipe, Trolley)
 from users.models import User
-from users.serializers import UserCreateSerializer, UseridSerializer
+from users.serializers import UseridSerializer
 
 
 class TagSerializer(ModelSerializer):
