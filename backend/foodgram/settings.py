@@ -1,7 +1,5 @@
 import os
 
-import users.djoser
-
 from datetime import timedelta
 from dotenv import load_dotenv
 from pathlib import Path
@@ -124,8 +122,12 @@ REST_FRAMEWORK = {
 }
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=100),
-    'AUTH_HEADER_TYPES': ('Token',),
+    'AUTH_HEADER_TYPES': ('Token', )
 }
+
+#PERMISSIONS = {
+#    'user': 'rest_framework.permissions.AllowAny',
+#}
 
 DJOSER = {
 #    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',

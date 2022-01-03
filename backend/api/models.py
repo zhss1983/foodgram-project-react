@@ -70,7 +70,7 @@ class Recipe(models.Model):
     name = models.CharField(
         _('Название'),
         max_length=200,
-        unique=True,
+        #unique=True,
         blank=False,
         null=False
     )

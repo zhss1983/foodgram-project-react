@@ -3,8 +3,9 @@ from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
@@ -20,10 +21,10 @@ from users.pagination import LimitPageNumberPagination
 from users.models import User
 
 
-class UsersViewSet(GenericViewSet):
-    permission_classes = (RegistrationUserPermission, )
+class UsersViewSet(GenericViewSet, RetrieveModelMixin):
+    permission_classes = (RegistrationUserPermission, )  # RegistrationUserPermission AllowAny
     filter_backends = (SearchFilter, )
-    search_fields = ('=username', )
+    search_fields = ('=username', '=email')
     serializer_class = UseridSerializer
     queryset = User.objects.all()
     pagination_class = LimitPageNumberPagination
@@ -53,17 +54,19 @@ class IngredientViewSet(ModelViewSet):
     queryset = Ingredient.objects.all()
     filter_backends = (NameSearchFilter, )
     pagination_class = None
-    search_fields = ('^name', )
+    search_fields = ('$name', )  # '^name',
 
 
-class SubscribeViewSet(GenericViewSet):
-    permission_classes = (EditAccessOrReadOnly, )
+class SubscribeViewSet(GenericViewSet, RetrieveModelMixin):
+    permission_classes = (EditAccessOrReadOnly, )  # EditAccessOrReadOnly AllowAny
     serializer_class = FollowEditSerializer
     lookup_value_regex = r'\d+'
     pagination_class = LimitPageNumberPagination
 
     def get_queryset(self):
-        return User.objects.filter(following__user=self.request.user)
+        if self.request.user.is_authenticated:
+            return User.objects.filter(following__user=self.request.user).all()
+        return User.objects.all()
 
     @action(detail=False,
             permission_classes=[IsAuthenticated],

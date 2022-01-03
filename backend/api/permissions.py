@@ -32,16 +32,16 @@ class RegistrationUserPermission(permissions.BasePermission):
         safe = request.method in SAFE_METHODS
         author = request.user and request.user.is_authenticated
         admin = author and request.user.is_superuser
-        url = request.stream.path == '/api/users/'
-        return safe or author or admin or url
+        #url = request.stream.path == r'/api/users/me/'
+        return safe or author or admin# or url
 
     def has_object_permission(self, request, view, obj):
         safe = request.method in SAFE_METHODS
         auth = request.user and request.user.is_authenticated
         author = auth and obj.author == request.user
         admin = auth and request.user.is_superuser
-        url = request.stream.path == '/api/users/'
-        return safe or author or admin or url
+        #url = request.stream.path == r'/api/users/me/'
+        return safe or author or admin# or url
 
 
 class AdminOrReadOnly(BasePermission):

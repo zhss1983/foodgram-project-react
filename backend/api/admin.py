@@ -30,9 +30,23 @@ class IngredientAdmin(admin.ModelAdmin):
 
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'pk', 'author', 'name', 'image', 'text', 'cooking_time', 'pub_date')
-    search_fields = ('author__username', 'name', 'text')
+        'pk', 'author', 'name', 'image', 'text', 'cooking_time', 'pub_date',
+        'in_favorite', 'get_tags', 
+    )
+    search_fields = ('author__username', 'name', 'tags__tag__name')
     empty_value_display = EMPTY
+    #inlines = [TagAdmin, IngredientAdmin]
+
+    def in_favorite(self, obj):
+        return Favorite.objects.filter(recipe=obj).count()
+
+    def get_tags(self, obj):
+        tags_list = TagRecipe.objects.filter(recipe=obj).all()
+        tags_list = (obj.tag.name for obj in tags_list)
+        return ', '.join(tags_list)
+
+    in_favorite.short_description = 'Добавлено в избранные, раз'
+    get_tags.short_description = 'Тэги'
 
 
 class AmountAdmin(admin.ModelAdmin):
