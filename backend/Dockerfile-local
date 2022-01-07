@@ -1,8 +1,0 @@
-FROM python:3.9-slim
-RUN mkdir /code
-VOLUME ./:/code/
-RUN pip3 install -r /code/requirements.txt
-RUN pip3 install -r /code/requirements_db.txt
-WORKDIR /code
-#CMD gunicorn foodgram.wsgi:application --bind 0.0.0.0:8000
-CMD python manage.py runserver

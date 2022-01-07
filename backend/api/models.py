@@ -6,6 +6,7 @@ from users.models import User
 
 
 class Tag(models.Model):
+    """Модель содержит представление о тегах рецептов."""
     name = models.CharField(
         _('Имя тега'),
         max_length=200,
@@ -36,6 +37,7 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
+    """"Модель содержит представление всех ингредиентов."""
     name = models.CharField(
         verbose_name=_('Название ингредиента'),
         max_length=200,
@@ -59,6 +61,7 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
+    """Модель содержит представление всех рецептов."""
     author = models.ForeignKey(
         User,
         verbose_name=_('Автор'),
@@ -150,6 +153,7 @@ class Recipe(models.Model):
 
 
 class TagRecipe(models.Model):
+    """Модель связывает тэги с рецептами."""
     tag = models.ForeignKey(
         Tag,
         verbose_name=_('Тэги'),
@@ -179,6 +183,7 @@ class TagRecipe(models.Model):
 
 
 class Amount(models.Model):
+    """Модель связывает рецепты с ингредиентами и их количеством."""
     amount = models.DecimalField(
         verbose_name=_('Количество'),
         max_digits=7,
@@ -228,6 +233,7 @@ class Amount(models.Model):
 
 
 class Favorite(models.Model):
+    """Модель связывает пользователей и их любимые рецепты."""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -257,6 +263,7 @@ class Favorite(models.Model):
 
 
 class Follow(models.Model):
+    """Модель связывает пользователей и избранных авторов рецептов."""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -290,6 +297,7 @@ class Follow(models.Model):
 
 
 class Trolley(models.Model):
+    """Модель связывает пользователя с выбранными им рецептами."""
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='trolley')
     recipe = models.ForeignKey(

@@ -45,6 +45,8 @@ class TagViewSet(ModelViewSet):
     search_fields = ('=name', )
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
+    lookup_value_regex = r'\d+'
+    lookup_field = 'id'
     pagination_class = None
 
 
@@ -54,13 +56,16 @@ class IngredientViewSet(ModelViewSet):
     queryset = Ingredient.objects.all()
     filter_backends = (NameSearchFilter, )
     pagination_class = None
+    lookup_value_regex = r'\d+'
+    lookup_field = 'id'
     search_fields = ('$name', )  # '^name',
 
 
-class SubscribeViewSet(GenericViewSet, RetrieveModelMixin):
-    permission_classes = (EditAccessOrReadOnly, )  # EditAccessOrReadOnly AllowAny
+class SubscribeViewSet(GenericViewSet):  # RetrieveModelMixin
+    permission_classes = (EditAccessOrReadOnly, )
     serializer_class = FollowEditSerializer
     lookup_value_regex = r'\d+'
+    lookup_field = 'id'
     pagination_class = LimitPageNumberPagination
 
     def get_queryset(self):
@@ -71,7 +76,8 @@ class SubscribeViewSet(GenericViewSet, RetrieveModelMixin):
     @action(detail=False,
             permission_classes=[IsAuthenticated],
             methods=['GET'],
-            url_path='subscriptions')
+            url_path='subscriptions',
+            url_name='subscriptions')
     def follow_list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
@@ -81,7 +87,8 @@ class SubscribeViewSet(GenericViewSet, RetrieveModelMixin):
     @action(detail=True,
             permission_classes=[IsAuthenticated],
             methods=['POST', 'DELETE'],
-            url_path='subscribe')
+            url_path='subscribe',
+            url_name='subscribe')
     def follow(self, request, *args, **kwargs):
         author = get_object_or_404(User, pk=self.get_id())
         if request.method == 'POST':
@@ -119,6 +126,9 @@ class RecipeViewSet(ModelViewSet):
     permission_classes = (EditAccessOrReadOnly, )
     serializer_class = RecipeSerializer
     pagination_class = LimitPageNumberPagination
+    lookup_value_regex = r'\d+'
+    lookup_field = 'id'
+
 
     def get_is_favorited(self):
         value = get_param_value_views(self, 'is_favorited')

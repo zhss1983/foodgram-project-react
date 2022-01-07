@@ -1,9 +1,10 @@
 import os
 
-from datetime import timedelta
+import rest_framework.permissions
 from dotenv import load_dotenv
 from pathlib import Path
 
+from users.setup import DJOSER, SIMPLE_JWT
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,9 +18,12 @@ load_dotenv(os.path.join(BASE_DIR, '.env_db'))
 load_dotenv(os.path.join(BASE_DIR, '.env_mail'))
 load_dotenv(os.path.join(BASE_DIR, '.env_web'))
 
-DEBUG = True
+DEBUG = False
 
-# ALLOWED_HOSTS = ['192.168.0.104', 'localhost', '127.0.0.1', '.zhss.tk', 'www.zhss.tk']
+# ALLOWED_HOSTS = [
+#     '192.168.0.104', 'localhost', '127.0.0.1', '.zhss.tk', 'www.zhss.tk'
+# ]
+
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
@@ -68,10 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-#SERIALIZERS = {
-#    'user': 'api.serializers.UserSerializer'
-#}
-
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
@@ -119,31 +119,6 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
-}
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=100),
-    'AUTH_HEADER_TYPES': ('Token', )
-}
-
-#PERMISSIONS = {
-#    'user': 'rest_framework.permissions.AllowAny',
-#}
-
-DJOSER = {
-#    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-#    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
-#    'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': False,
-    'SERIALIZERS': {
-        'user_create': 'users.serializers.UserCreateSerializer',
-        'current_user': 'api.serializers.UseridSerializer',
-        'user': 'api.serializers.UseridSerializer'
-    },
-#    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-#    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
-#    'ACTIVATION_URL': '#/activate/{uid}/{token}',
-#    'SEND_ACTIVATION_EMAIL': True,
-    'LOGIN_FIELD': 'email',
 }
 
 # Static files (CSS, JavaScript, Images)
