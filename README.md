@@ -1,4 +1,4 @@
-# Документация к API Foodgram
+# [Документация к API Foodgram](http://www.zhss.tk/recipes)
 
 ## Как запустить проект:
 
@@ -42,7 +42,7 @@ docker-compose up -d
 ## Работа с эндпоинтами:
 
 Краткое описание основных возможностей, за более подробной информацией
-обратитесь к [/redoc/](/api/docs/) 
+обратитесь к [/redoc/](http://www.zhss.tk/api/docs/) 
 
 По всем вопросам обращайтесь к администраторам по электронной почте
-[ask@api_yamdb.ru](mailto:ask@api_yamdb.ru)
+[zhss.83@mail.ru](mailto:zhss.83@mail.ru)
