@@ -778,14 +778,14 @@ class UsersTestCase(BaseTestCase):
 
     def test_users_subscribe_user_not_exist(self):
         """Проверяет подписку на не существующего пользователя."""
-        wrong_id = User.objects.order_by('pk').last() + 1
+        wrong_id = User.objects.order_by('pk').last().pk + 1
         url = reverse('user-subscribe', kwargs={'id': wrong_id})
         response = self.authorized.post(url)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_users_unsubscribe_user_not_exist(self):
         """Проверяет отписку от не существующего пользователя."""
-        wrong_id = User.objects.order_by('pk').last() + 1
+        wrong_id = User.objects.order_by('pk').last().pk + 1
         url = reverse('user-subscribe', kwargs={'id': wrong_id})
         response = self.authorized.delete(url)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)

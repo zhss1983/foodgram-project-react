@@ -2,8 +2,6 @@ FROM python:3.9-slim
 RUN mkdir /code
 COPY requirements.txt /code
 RUN pip3 install -r /code/requirements.txt
-COPY requirements_db.txt /code
-RUN pip3 install -r /code/requirements_db.txt
 COPY . /code
 WORKDIR /code
 ENV DB_ENGINE django.db.backends.postgresql_psycopg2
