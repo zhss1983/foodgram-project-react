@@ -54,3 +54,15 @@ class AdminOrReadOnly(BasePermission):
             request.user.is_superuser
         )
         return safe or authorized
+
+class AuthorOrAdminUserPermission(permissions.BasePermission):
+    """Даёт особые права на регистрацию пользователя."""
+
+    def has_permission(self, request, view):
+        author = request.user and request.user.is_authenticated
+        admin = author and request.user.is_superuser
+        return author or admin
+
+    def has_object_permission(self, request, view, obj):
+        return (request.user and request.user.is_authenticated and
+                (request.user.is_superuser or obj.author == request.user))

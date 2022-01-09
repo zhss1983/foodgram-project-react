@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import SAFE_METHODS, IsAuthenticated, AllowAny
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
@@ -13,7 +13,8 @@ from .default import get_param_value_views, getlist_param_value_views
 from .filters import NameSearchFilter
 from .models import Favorite, Follow, Ingredient, Recipe, Tag, Trolley
 from .permissions import (
-    AdminOrReadOnly, EditAccessOrReadOnly, RegistrationUserPermission)
+    AdminOrReadOnly, EditAccessOrReadOnly, RegistrationUserPermission,
+    AuthorOrAdminUserPermission)
 from .serializers import (
     FavoriteSerializer, FollowEditSerializer, IngredientSerializer,
     RecipeSaveSerializer, RecipeSerializer, TagSerializer, UseridSerializer)
@@ -22,7 +23,7 @@ from users.models import User
 
 
 class UsersViewSet(GenericViewSet, RetrieveModelMixin):
-    permission_classes = (RegistrationUserPermission, )  # RegistrationUserPermission AllowAny
+    permission_classes = (RegistrationUserPermission, )
     filter_backends = (SearchFilter, )
     search_fields = ('=username', '=email')
     serializer_class = UseridSerializer
@@ -112,7 +113,7 @@ class SubscribeViewSet(GenericViewSet):  # RetrieveModelMixin
             if not instance.exists():
                 return Response(
                     {"errors": "Ошибка отписки"},
-                    status=status.HTTP_204_NO_CONTENT
+                    status=status.HTTP_400_BAD_REQUEST
                 )
             instance.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -128,7 +129,6 @@ class RecipeViewSet(ModelViewSet):
     pagination_class = LimitPageNumberPagination
     lookup_value_regex = r'\d+'
     lookup_field = 'id'
-
 
     def get_is_favorited(self):
         value = get_param_value_views(self, 'is_favorited')
@@ -183,7 +183,7 @@ class RecipeViewSet(ModelViewSet):
             return RecipeSaveSerializer
 
     @action(detail=True,
-            permission_classes=[EditAccessOrReadOnly],
+            permission_classes=[AuthorOrAdminUserPermission],
             methods=['POST', 'DELETE'])
     def favorite(self, request, *args, **kwargs):
         recipe = get_object_or_404(Recipe, pk=self.get_id())
@@ -207,7 +207,7 @@ class RecipeViewSet(ModelViewSet):
         return self.kwargs[self.lookup_field]
 
     @action(detail=False,
-            permission_classes=[EditAccessOrReadOnly],
+            permission_classes=[AuthorOrAdminUserPermission],
             methods=['GET'])
     def download_shopping_cart(self, request, *args, **kwargs):
         trolleys = Trolley.objects.filter(
@@ -234,7 +234,7 @@ class RecipeViewSet(ModelViewSet):
         )
 
     @action(detail=True,
-            permission_classes=[EditAccessOrReadOnly],
+            permission_classes=[AuthorOrAdminUserPermission],
             methods=['POST', 'DELETE'])
     def shopping_cart(self, request, *args, **kwargs):
         recipe = get_object_or_404(Recipe, pk=self.get_id())
