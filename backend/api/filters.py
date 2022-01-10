@@ -1,4 +1,3 @@
-#from rest_framework.compat import coreapi, coreschema, distinct
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework.filters import SearchFilter
@@ -65,15 +64,6 @@ class RecipeFilter:
             queryset = queryset.filter(tags__tag__slug__in=tags)
         return queryset.order_by('-pk').distinct('pk')
 
-    """
-    def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
-        return []
-
-    def get_schema_operation_parameters(self, view):
-        return []
-    """
 
 class NameSearchFilter(SearchFilter):
     search_param = 'name'

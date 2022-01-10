@@ -20,11 +20,11 @@ services:
       - ./.env_db
 
   backend:
-    #image: zhss1983/foodgram:latest
-    build:
-      # context: ../backend
-      context: ./backend
-      dockerfile: ./Dockerfile
+    image: zhss1983/foodgram:latest
+    #build:
+    #  # context: ../backend
+    #  context: ./backend
+    #  dockerfile: ./Dockerfile
     ports:
       - "8000:80"
     restart: always
