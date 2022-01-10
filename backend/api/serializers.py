@@ -6,7 +6,6 @@ from rest_framework.serializers import (
     CurrentUserDefault, ModelSerializer, SerializerMethodField,
     ValidationError)
 
-from .default import get_param_value_serialize
 from .models import (
     Amount, Favorite, Follow, Ingredient, Recipe, Tag, TagRecipe, Trolley)
 from users.models import User
@@ -68,10 +67,15 @@ class FollowEditSerializer(UseridSerializer):
     recipes = SerializerMethodField()
     recipes_count = SerializerMethodField()
 
+    def get_param_value_serialize(self, serializer_field, parameter_name,
+                                  default=None):
+        return serializer_field.context['request'].query_params.get(
+            parameter_name, default)
+
     def get_recipes(self, obj):
         queryset = Recipe.objects.filter(author=obj)
         if queryset:
-            limit = get_param_value_serialize(self, 'recipes_limit', '')
+            limit = self.get_param_value_serialize(self, 'recipes_limit', '')
             limit = ''.join(char for char in limit if char in '0123456789')
             if limit:
                 queryset = queryset[:int(limit)]
