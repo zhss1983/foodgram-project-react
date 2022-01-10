@@ -11,7 +11,7 @@ def getlist_param_value_views(view, parameter_name, default=None):
     return view.request.query_params.getlist(parameter_name, default)
 
 
-class GetQueryParameter():
+class GetQueryParameter:
     """Базовый класс для получения значений по умолчанию"""
     requires_context = True
 

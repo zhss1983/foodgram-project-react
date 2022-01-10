@@ -38,7 +38,7 @@ class TagRecipeSerializer(ModelSerializer):
 
     def to_internal_value(self, data):
         if isinstance(data, int):
-            return Tag.objects.get(pk=data)
+            return get_object_or_404(Tag, pk=data)
         return data
 
 
@@ -143,54 +143,73 @@ class RecipeSerializer(ModelSerializer):
             raise ValidationError('This field must be >= 1.')
         return value
 
-    @transaction.atomic
-    def create(self, validated_data):
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
-        validated_data.pop('author')
-        author = CurrentUserDefault()(self)
-        recipe = Recipe.objects.create(author=author, **validated_data)
+    def tag_recipe_create(self, recipe, tags):
+        tagrecipe = [None] * len(tags)
+        for pos, tag in enumerate(tags):
+            tagrecipe[pos] = TagRecipe(recipe=recipe, tag=tag)
+        TagRecipe.objects.bulk_create(tagrecipe)
+
+    def ingredient_amount_create(self, recipe, ingredients):
         ings = [None] * len(ingredients)
         for pos, obj in enumerate(ingredients):
             amount = obj['amount']
             ing = get_object_or_404(Ingredient, pk=obj['ingredient']['pk'])
             ings[pos] = Amount(recipe=recipe, amount=amount, ingredient=ing)
         Amount.objects.bulk_create(ings)
-        tagrecipe = [None] * len(tags)
-        for pos, tag in enumerate(tags):
-            tagrecipe[pos] = TagRecipe(recipe=recipe, tag=tag)
-        TagRecipe.objects.bulk_create(tagrecipe)
+
+    def ingredient_amount_delete(self, recipe, ingredients):
+        for obj in ingredients:
+            amount = obj['amount']
+            ing = get_object_or_404(Ingredient, pk=obj['ingredient']['pk'])
+            Amount.objects.filter(
+                recipe=recipe, amount=amount, ingredient=ing).delete()
+
+    def del_create_separate(self, old_list, new_list):
+        """
+        Делю список на два. del_list - элементы которые надо удалить из
+        предыдущего списка, add_list - элементы которые надо бобавить в новый.
+        После этого список old_list станет соответствовать new_list.
+        """
+        del_list = tuple(obj for obj in old_list if obj not in new_list)
+        add_list = tuple(obj for obj in new_list if obj not in old_list)
+        return add_list, del_list
+
+    @transaction.atomic
+    def create(self, validated_data):
+        # Выдёргиваю поля напрямую не относящиеся к рецепту.
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        validated_data.pop('author')
+        # Создаю рецепт
+        author = CurrentUserDefault()(self)
+        recipe = Recipe.objects.create(author=author, **validated_data)
+        # Сохраняю ингредиениты.
+        self.ingredient_amount_create(recipe, ingredients)
+        # Сохраняю тэги
+        self.tag_recipe_create(recipe, tags)
         return recipe
 
     @transaction.atomic
     def update(self, instance, validated_data):
+        # Выдёргиваю поля напрямую не относящиеся к рецепту.
+        # Обновляю тэги
         tags = validated_data.pop('tags')
-        old_tags = Tag.objects.filter(tagrecipes__recipe=instance).all()
-        del_tags = tuple(tag for tag in old_tags if tag not in tags)
-        new_tags = tuple(tag for tag in tags if tag not in old_tags)
+        old_tags = TagRecipe.objects.filter(
+            recipe=instance).values_list('tag', flat=True)
+        add_tags, del_tags = self.del_create_separate(old_tags, tags)
         TagRecipe.objects.filter(tag__in=del_tags, recipe=instance).delete()
-        tagrecipe = [None] * len(new_tags)
-        for pos, tag in enumerate(new_tags):
-            tagrecipe[pos] = TagRecipe(recipe=instance, tag=tag)
-        TagRecipe.objects.bulk_create(tagrecipe)
+        self.tag_recipe_create(instance, add_tags)
+        # Обновляю ингредиениты.
         ingredients = validated_data.pop('ingredients')
         old_ings = instance.ingredients.all()
-        new_ings = [None] * len(ingredients)
-        for pos, obj in enumerate(ingredients):
-            amount = obj['amount']
-            ing = get_object_or_404(Ingredient, pk=obj['ingredient']['pk'])
-            obj, create = old_ings.get_or_create(
-                recipe=instance, amount=amount, ingredient=ing)
-            new_ings[pos] = obj
-        for ing in old_ings:
-            if ing not in new_ings:
-                ing.delete()
+        new_ings, del_ings = self.del_create_separate(old_ings, ingredients)
+        self.ingredient_amount_delete(instance, del_ings)
+        self.ingredient_amount_create(instance, new_ings)
+        # даляю старое изображение если будет записано новое.
         if 'image' in validated_data:
             instance.image.delete()
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        return instance
+        # Обновляю все поля.
+        return super().update(instance, validated_data)
 
 
 class RecipeSaveSerializer(RecipeSerializer):

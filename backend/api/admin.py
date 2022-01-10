@@ -40,9 +40,9 @@ class RecipeAdmin(admin.ModelAdmin):
         return Favorite.objects.filter(recipe=obj).count()
 
     def get_tags(self, obj):
-        tags_list = TagRecipe.objects.filter(recipe=obj).all()
-        tags_list = (obj.tag.name for obj in tags_list)
-        return ', '.join(tags_list)
+        names = TagRecipe.objects.filter(
+            recipe=obj).values_list('tag__name', flat=True)
+        return ', '.join(names)
 
     in_favorite.short_description = 'Добавлено в избранные, раз'
     get_tags.short_description = 'Тэги'

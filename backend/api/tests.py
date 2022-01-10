@@ -177,19 +177,19 @@ class BaseTestCase(TestCase):
         типа тэги и ингредиенты
         """
         self.assertIsInstance(recipe, dict)
-        id = recipe.get('id')
+        recipe_id = recipe.get('id')
 
         tags = recipe.pop('tags', None)
-        tags_count = TagRecipe.objects.filter(recipe_id=id).count()
+        tags_count = TagRecipe.objects.filter(recipe_id=recipe_id).count()
         self.is_tags(tags, count=tags_count)
 
         author = recipe.pop('author', None)
         self.is_user(author)
 
         ingredients = recipe.pop('ingredients', None)
-        amount_count = Amount.objects.filter(recipe_id=id).count()
+        amount_count = Amount.objects.filter(recipe_id=recipe_id).count()
         self.is_ingredients_amount(
-            ingredients, recipe_id=id, count=amount_count)
+            ingredients, recipe_id=recipe_id, count=amount_count)
 
         self.assertIsNotNone(recipe.pop('is_favorited', None))
         self.assertIsNotNone(recipe.pop('is_in_shopping_cart', None))
@@ -1199,8 +1199,6 @@ class RecipeTestCase(BaseTestCase):
 
         changed_recipe = Recipe.objects.get(pk=recipe.pk)
         self.assertNotEqual(changed_recipe.name, recipe.name)
-        # Не умеет правильно сравнивать записи из БД.
-        # self.assertNotEqual(changed_recipe, recipe)
 
         self.assertIn('tags', data)
         tags = data.get('tags')

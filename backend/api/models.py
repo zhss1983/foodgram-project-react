@@ -8,23 +8,17 @@ from users.models import User
 class Tag(models.Model):
     """Модель содержит представление о тегах рецептов."""
     name = models.CharField(
-        _('Имя тега'),
+        verbose_name=_('Имя тега'),
         max_length=200,
-        unique=True,
-        blank=False,
-        null=False
+        unique=True
     )
     color = models.CharField(
-        _('Цвет тега'),
+        verbose_name=_('Цвет тега'),
         max_length=7,
-        blank=False,
-        null=False
     )
     slug = models.SlugField(
         verbose_name=_('Адрес тега'),
-        unique=True,
-        blank=False,
-        null=False
+        unique=True
     )
 
     class Meta:
@@ -41,20 +35,22 @@ class Ingredient(models.Model):
     name = models.CharField(
         verbose_name=_('Название ингредиента'),
         max_length=200,
-        blank=False,
-        null=False
     )
     measurement_unit = models.CharField(
+        verbose_name=_('Единица измерения'),
         max_length=50,
-        blank=False,
-        null=False
     )
 
     class Meta:
         verbose_name = _('Ингредиент')
         verbose_name_plural = _('Ингредиенты')
-        unique_together = ('name', 'measurement_unit')
         ordering = ('name', )
+        constraints = (
+            models.UniqueConstraint(
+                fields=('name', 'measurement_unit'),
+                name=_('Ingredient_unique_name_and_measurement_unit'),
+            ),
+        )
 
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}'
@@ -66,72 +62,29 @@ class Recipe(models.Model):
         User,
         verbose_name=_('Автор'),
         on_delete=models.CASCADE,
-        related_name=_('recipes'),
-        blank=False,
-        null=False
+        related_name='recipes',
     )
     name = models.CharField(
-        _('Название'),
+        verbose_name=_('Название'),
         max_length=200,
-        #unique=True,
-        blank=False,
-        null=False
     )
     image = models.ImageField(
         upload_to=_('Recipe/'),
         verbose_name=_('Картинка'),
         help_text=_('Загрузите изображение'),
-        blank=False,
-        null=False
     )
     text = models.TextField(
         verbose_name=_('Текстовое описание'),
-        blank=False,
-        null=False
     )
     cooking_time = models.IntegerField(
         verbose_name=_('Время приготовления, мин'),
         default=1,
-        blank=False,
-        null=False
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_('Дата публикации'),
     )
 
-    #  tags = models.ManyToManyField(
-    #    Tag,
-    #    verbose_name=_('Тэги'),
-    #    #related_name=_('recipes'),
-    #    #blank=False,
-    #    #null=False
-    #  )
-
-    #  ingredients = models.ManyToManyField(
-    #    Ingredient,
-    #    through='Amount',
-    #    #related_name=_('ingredients'),
-    #    verbose_name=_('Ингредиенты'),
-    #    #related_query_name=None,
-    #    #limit_choices_to=None,
-    #    #symmetrical=None,
-    #    through_fields=('recipe', 'ingredient'),
-    #    #db_constraint=True,
-    #    #db_table=None,
-    #    #swappable=True
-    #  )
-
-    #  При ужарки и уварки происходит изменение массы, надо предусмотреть поле
-    #  для заполнения данного параметра. Задел на будущее.
-    #    food_yield = models.DecimalField(
-    #        verbose_name=_('Размер порции'),
-    #        max_digits=7,
-    #        decimal_places=2,
-    #        default=1,
-    #        blank=False,
-    #        null=False
-    #    )
 
     class Meta:
         verbose_name = _('Рецепт')
@@ -158,17 +111,14 @@ class TagRecipe(models.Model):
         Tag,
         verbose_name=_('Тэги'),
         on_delete=models.CASCADE,
-        related_name=_('tagrecipes'),
+        related_name='tag_recipes',
     )
     recipe = models.ForeignKey(
         Recipe,
         verbose_name=_('Рецепт'),
         on_delete=models.CASCADE,
-        related_name=_('tags'),
+        related_name='tags',
     )
-
-    def __str__(self):
-        return f'{self.id}: {self.recipe.name}, {self.tag.name}'
 
     class Meta:
         verbose_name = _('Тэг рецепта')
@@ -181,6 +131,9 @@ class TagRecipe(models.Model):
             ),
         )
 
+    def __str__(self):
+        return f'{self.id}: {self.recipe.name}, {self.tag.name}'
+
 
 class Amount(models.Model):
     """Модель связывает рецепты с ингредиентами и их количеством."""
@@ -189,8 +142,6 @@ class Amount(models.Model):
         max_digits=7,
         decimal_places=2,
         default=1,
-        blank=False,
-        null=False
     )
     ingredient = models.ForeignKey(
         Ingredient,
@@ -204,21 +155,6 @@ class Amount(models.Model):
         on_delete=models.CASCADE,
         related_name=_('ingredients'),
     )
-    # Количество порций. Из-за того что стандартной массы с рецепта может быть
-    # слишком мало или много пользователь может приготовить другой объём.
-    # Множитель для рецепта в корзине. Заготовка на будущее.
-#    portions = models.DecimalField(
-#        verbose_name=_('Количество порций'),
-#        max_digits=7,
-#        decimal_places=2,
-#        default=1,
-#        blank=False,
-#        null=False
-#    )
-
-    def __str__(self):
-        return (f'{self.ingredient.name}, {self.amount} '
-                f'{self.ingredient.measurement_unit}')
 
     class Meta:
         verbose_name = _('Количество')
@@ -230,6 +166,10 @@ class Amount(models.Model):
                 name=_('amount_positive'),
             ),
         )
+
+    def __str__(self):
+        return (f'{self.ingredient.name}, {self.amount} '
+                f'{self.ingredient.measurement_unit}')
 
 
 class Favorite(models.Model):
@@ -299,9 +239,17 @@ class Follow(models.Model):
 class Trolley(models.Model):
     """Модель связывает пользователя с выбранными им рецептами."""
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='trolley')
+        User,
+        on_delete=models.CASCADE,
+        verbose_name=_('Пользователь'),
+        related_name='trolley'
+    )
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name='trolley')
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name=_('Рецепт'),
+        related_name='trolley'
+    )
 
     class Meta:
         verbose_name = _('Корзина')
