@@ -147,17 +147,14 @@ class RecipeViewSet(ModelViewSet, PostDeletGetID):
             permission_classes=[AuthorOrAdminUserPermission],
             methods=['GET'])
     def download_shopping_cart(self, request, *args, **kwargs):
-        pos = 0
         shopping_cart = ['Список необходимых покупок:']
         ingredients_list = Amount.objects.filter(
             recipe__trolley__user=self.request.user).values(
             'ingredient__name', 'ingredient__measurement_unit').annotate(
             amount=Sum('amount')).order_by('ingredient__name').values_list(
             'ingredient__name', 'amount', 'ingredient__measurement_unit')
-        for key, value, unit in ingredients_list[1:]:
-            pos += 1
+        for pos, key, value, unit in enumerate(ingredients_list[1:]):
             shopping_cart.append(f'{pos}: {key}, {value} {unit}')
-        print('\n'.join(shopping_cart))
         return FileResponse(
             '\n'.join(shopping_cart),
             as_attachment=True,
@@ -166,7 +163,7 @@ class RecipeViewSet(ModelViewSet, PostDeletGetID):
             content_type='text/plain'
         )
 
-    def post_delet(self, request, target):
+    def post_delete(self, request, target):
         obj = get_object_or_404(Recipe, pk=self.get_id())
         if request.method == 'POST':
             instance, created = target.objects.get_or_create(
@@ -189,11 +186,11 @@ class RecipeViewSet(ModelViewSet, PostDeletGetID):
             methods=['POST', 'DELETE'])
     def favorite(self, request, *args, **kwargs):
         """Добавление и удаление из избранных"""
-        return self.post_delet(request, Favorite)
+        return self.post_delete(request, Favorite)
 
     @action(detail=True,
             permission_classes=[AuthorOrAdminUserPermission],
             methods=['POST', 'DELETE'])
     def shopping_cart(self, request, *args, **kwargs):
         """Добавление и удаление из корзины"""
-        return self.post_delet(request, Trolley)
+        return self.post_delete(request, Trolley)
