@@ -20,11 +20,11 @@ load_dotenv(os.path.join(BASE_DIR, '.env_web'))
 
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    '192.168.0.104', 'localhost', '127.0.0.1', '.zhss.tk', 'www.zhss.tk'
-]
+ALLOWED_HOSTS = (*map(lambda name: name.strip(' ,\t'), os.getenv(
+        'HOST_NAMES', 'localhost, 127.0.0.1, zhss.tk, www.zhss.tk'
+    ).split(',')), )
 
-INSTALLED_APPS = [
+INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,9 +36,9 @@ INSTALLED_APPS = [
     'djoser',
     'users.apps.UsersConfig',
     'api.apps.ApiConfig',
-]
+)
 
-MIDDLEWARE = [
+MIDDLEWARE = (
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -46,7 +46,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+)
 
 ROOT_URLCONF = 'foodgram.urls'
 
@@ -81,7 +81,7 @@ DATABASES = {
     }
 }
 
-AUTH_PASSWORD_VALIDATORS = [
+AUTH_PASSWORD_VALIDATORS = (
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
@@ -94,7 +94,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
-]
+)
 
 LANGUAGE_CODE = 'ru'
 
@@ -114,9 +114,9 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'users.pagination.LimitPageNumberPagination',
     'PAGE_SIZE': 6,
-    'DEFAULT_RENDERER_CLASSES': [
+    'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-    ],
+    ),
 }
 
 STATIC_URL = 'static/'

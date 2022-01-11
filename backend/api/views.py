@@ -153,7 +153,7 @@ class RecipeViewSet(ModelViewSet, PostDeletGetID):
             'ingredient__name', 'ingredient__measurement_unit').annotate(
             amount=Sum('amount')).order_by('ingredient__name').values_list(
             'ingredient__name', 'amount', 'ingredient__measurement_unit')
-        for pos, key, value, unit in enumerate(ingredients_list[1:]):
+        for pos, (key, value, unit) in enumerate(ingredients_list[1:]):
             shopping_cart.append(f'{pos}: {key}, {value} {unit}')
         return FileResponse(
             '\n'.join(shopping_cart),
