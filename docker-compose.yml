@@ -14,21 +14,13 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      # - ./data/db:/var/lib/postgresql/data
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - ./.env_db
 
   backend:
     image: zhss1983/foodgram:latest
-    #build:
-    #  # context: ../backend
-    #  context: ./backend
-    #  dockerfile: ./Dockerfile
-    ports:
-      - "8000:80"
     restart: always
-    #command: gunicorn foodgram.wsgi:application --bind 0.0.0.0:80
     command: >
       sh -c "python manage.py collectstatic --noinput &&
              python manage.py migrate &&

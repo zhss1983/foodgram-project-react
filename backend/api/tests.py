@@ -1,6 +1,7 @@
 import json
 from http import HTTPStatus
 from random import choice, choices, randint
+from time import time
 
 from django.core.cache import cache
 from django.test import TestCase
@@ -659,10 +660,18 @@ class RecipeTestCase(BaseTestCase):
         User.objects.create(
             **cls.users[2], password='password_nvreiuhfglkdsn', is_active=True)
 
-        for recipe in range(1, 15):
+        for recipe in range(1, 8):
             Recipe.objects.create(
                 image=None,
                 author=user1,
+                name=f'Рецепт {recipe}',
+                text=f'Рецепт {recipe}',
+                cooking_time=recipe
+            )
+        for recipe in range(8, 17):
+            Recipe.objects.create(
+                image=None,
+                author=cls.user,
                 name=f'Рецепт {recipe}',
                 text=f'Рецепт {recipe}',
                 cooking_time=recipe
@@ -1015,6 +1024,57 @@ class RecipeTestCase(BaseTestCase):
         ingredients = data.get('ingredients')
         self.assertIsInstance(ingredients, list)
         self.assertEqual(ingredients[0].get('id'), ingredient.pk)
+
+    def test_receipes_patch_multitest(self):
+        """Проверяет возможность изменения рецептов в случайном порядке."""
+        recipes = Recipe.objects.filter(author=self.__class__.user)
+
+        ingredients = Ingredient.objects.all()
+        ingr_count = Ingredient.objects.count()
+
+        tags = Tag.objects.all()
+        tags_count = Tag.objects.count()
+
+        for recipe in recipes:
+            with self.subTest(recipes=recipes):
+                url = reverse('recipe-detail', kwargs={'id': recipe.pk})
+                ctime = time()
+                data = {
+                    'ingredients': (
+                        *(
+                            {
+                                'id': ingr.pk,
+                                'name': ingr.name,
+                                'measurement_unit': ingr.measurement_unit,
+                                'amount': 50
+                            } for ingr in set(choices(
+                                ingredients, k=randint(1, ingr_count)))
+                        ),
+                    ),
+                    'tags': (
+                                *(tag.pk for tag in set(choices(
+                                    tags, k=randint(1, tags_count)))),
+                            ),
+                    'image': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAA'
+                             'AUCAIAAAAC64paAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQ'
+                             'UAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAADnSURBVDhPnZFNCsIwEI'
+                             'U9iEvvoUsv5MpbuHDnRnDhUtEjCMWfnbjwAP6BUEGEUExMmTR9mf'
+                             'wUfDzKZOZ97YS2VFJCfLv9fdCz+bWExXL1GY0pzZRtc8agS1iTz3'
+                             'aHTAxpd3ixNHO9tuXpFVIqG+oBgHZgLBK3tY7CRSFZlHmT5dG1tR'
+                             'brBwPQOhD+MtW3u9D/gzHWOhCASXg8nt6D4RnJyfSi++G1yWYQVw'
+                             '3/oWY4sYID+7n0/vzO5lAJO37AwDESm37GgdnMP7JODdMTx6zGI8'
+                             'mBsdAiAG0GlfjawRDJ7xuY1Ag7I6V+eFybE9tlqTkAAAAASUVORK'
+                             '5CYII==',
+                    'name': f'Изменён {ctime}',
+                    'text': f'Изменён {ctime}',
+                    'cooking_time': randint(1, 0xffff)
+                }
+                response = self.authorized.patch(url, data=data, format='json')
+                json_data = json.loads(response.content)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
+                self.assertEqual(json_data.get('id'), recipe.pk)
+                changed_recipe = Recipe.objects.get(pk=recipe.pk)
+                self.assertNotEqual(changed_recipe.name, recipe.name)
 
     def test_receipes_patch_wrong_user(self):
         """Проверяет блокировку изменения чужого рецепта."""

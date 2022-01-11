@@ -1,9 +1,12 @@
+# Enviroments
+.env
+.env_*
+
 # main
 zhss_*
 zhss_*/
-static/
-media/
 
+.Dockerfile
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
