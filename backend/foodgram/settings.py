@@ -18,7 +18,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env_db'))
 load_dotenv(os.path.join(BASE_DIR, '.env_mail'))
 load_dotenv(os.path.join(BASE_DIR, '.env_web'))
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '192.168.0.104', 'localhost', '127.0.0.1', '.zhss.tk', 'www.zhss.tk'

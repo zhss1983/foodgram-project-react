@@ -153,20 +153,18 @@ class RecipeSerializer(ModelSerializer):
             tagrecipe[pos] = TagRecipe(recipe=recipe, tag=tag)
         TagRecipe.objects.bulk_create(tagrecipe)
 
-    def ingredient_amount_create(self, recipe, ingredients):
-        ings = [None] * len(ingredients)
+    def ingredient_amount(self, recipe, ingredients):
+        old_ings = recipe.ingredients.all()
+        new_ings = [None] * len(ingredients)
         for pos, obj in enumerate(ingredients):
             amount = obj['amount']
             ing = get_object_or_404(Ingredient, pk=obj['ingredient']['pk'])
-            ings[pos] = Amount(recipe=recipe, amount=amount, ingredient=ing)
-        Amount.objects.bulk_create(ings)
-
-    def ingredient_amount_delete(self, recipe, ingredients):
-        for obj in ingredients:
-            amount = obj['amount']
-            ing = get_object_or_404(Ingredient, pk=obj['ingredient']['pk'])
-            Amount.objects.filter(
-                recipe=recipe, amount=amount, ingredient=ing).delete()
+            obj, create = old_ings.get_or_create(
+                recipe=recipe, amount=amount, ingredient=ing)
+            new_ings[pos] = obj
+        for ing in old_ings:
+            if ing not in new_ings:
+                ing.delete()
 
     def del_create_separate(self, old_list, new_list):
         """
@@ -188,7 +186,7 @@ class RecipeSerializer(ModelSerializer):
         author = CurrentUserDefault()(self)
         recipe = Recipe.objects.create(author=author, **validated_data)
         # Сохраняю ингредиениты.
-        self.ingredient_amount_create(recipe, ingredients)
+        self.ingredient_amount(recipe, ingredients)
         # Сохраняю тэги
         self.tag_recipe_create(recipe, tags)
         return recipe
@@ -205,10 +203,7 @@ class RecipeSerializer(ModelSerializer):
         self.tag_recipe_create(instance, add_tags)
         # Обновляю ингредиениты.
         ingredients = validated_data.pop('ingredients')
-        old_ings = instance.ingredients.all()
-        new_ings, del_ings = self.del_create_separate(old_ings, ingredients)
-        self.ingredient_amount_delete(instance, del_ings)
-        self.ingredient_amount_create(instance, new_ings)
+        self.ingredient_amount(instance, ingredients)
         # даляю старое изображение если будет записано новое.
         if 'image' in validated_data:
             instance.image.delete()
