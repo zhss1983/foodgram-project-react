@@ -28,7 +28,7 @@ jobs:
 
     - name: Test with flake8
       run: |
-        cd backend/foodgram/
+        cd backend/
         python -m flake8 
 
     - name: Test with django tests
