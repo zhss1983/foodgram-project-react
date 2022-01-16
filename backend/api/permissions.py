@@ -19,8 +19,8 @@ class EditAccessOrReadOnly(IsAuthenticatedOrReadOnly):
     def has_object_permission(self, request, view, obj):
         safe = request.method in SAFE_METHODS
         authorized = (
-            request.user and request.user.is_authenticated and
-            (request.user.is_superuser or obj.author == request.user)
+            request.user and request.user.is_authenticated
+            and (request.user.is_superuser or obj.author == request.user)
         )
         return safe or authorized
 
@@ -32,16 +32,14 @@ class RegistrationUserPermission(permissions.BasePermission):
         safe = request.method in SAFE_METHODS
         author = request.user and request.user.is_authenticated
         admin = author and request.user.is_superuser
-        #url = request.stream.path == r'/api/users/me/'
-        return safe or author or admin# or url
+        return safe or author or admin
 
     def has_object_permission(self, request, view, obj):
         safe = request.method in SAFE_METHODS
         auth = request.user and request.user.is_authenticated
         author = auth and obj.author == request.user
         admin = auth and request.user.is_superuser
-        #url = request.stream.path == r'/api/users/me/'
-        return safe or author or admin# or url
+        return safe or author or admin
 
 
 class AdminOrReadOnly(BasePermission):
@@ -50,10 +48,11 @@ class AdminOrReadOnly(BasePermission):
     def has_permission(self, request, view):
         safe = request.method in SAFE_METHODS
         authorized = (
-            request.user and request.user.is_authenticated and
-            request.user.is_superuser
+            request.user and request.user.is_authenticated
+            and request.user.is_superuser
         )
         return safe or authorized
+
 
 class AuthorOrAdminUserPermission(permissions.BasePermission):
     """Даёт особые права на регистрацию пользователя."""
@@ -64,5 +63,5 @@ class AuthorOrAdminUserPermission(permissions.BasePermission):
         return author or admin
 
     def has_object_permission(self, request, view, obj):
-        return (request.user and request.user.is_authenticated and
-                (request.user.is_superuser or obj.author == request.user))
+        return (request.user and request.user.is_authenticated
+                and (request.user.is_superuser or obj.author == request.user))

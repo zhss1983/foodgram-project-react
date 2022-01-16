@@ -1,11 +1,9 @@
 import os
 
-import rest_framework.permissions
 from dotenv import load_dotenv
 from pathlib import Path
 
-from users.setup import DJOSER, SIMPLE_JWT
-
+from users.setup import DJOSER, SIMPLE_JWT  # noqa isort:skip
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,9 +18,11 @@ load_dotenv(os.path.join(BASE_DIR, '.env_web'))
 
 DEBUG = False
 
-ALLOWED_HOSTS = (*map(lambda name: name.strip(' ,\t'), os.getenv(
+ALLOWED_HOSTS = (
+    *map(lambda name: name.strip(' ,\t'), os.getenv(
         'HOST_NAMES', 'localhost, 127.0.0.1, zhss.tk, www.zhss.tk'
-    ).split(',')), )
+    ).split(',')),
+)
 
 INSTALLED_APPS = (
     'django.contrib.admin',

@@ -85,7 +85,6 @@ class Recipe(models.Model):
         verbose_name=_('Дата публикации'),
     )
 
-
     class Meta:
         verbose_name = _('Рецепт')
         verbose_name_plural = _('Рецепты')

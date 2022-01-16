@@ -1,11 +1,11 @@
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-from drf_extra_fields.fields import Base64ImageField
+from drf_extra_fields.fields import Base64ImageField  # noqa
 from rest_framework.fields import IntegerField, ReadOnlyField
 from rest_framework.serializers import (
     CurrentUserDefault, ModelSerializer, SerializerMethodField,
     ValidationError)
-
+# noqa
 from .models import (
     Amount, Favorite, Follow, Ingredient, Recipe, Tag, TagRecipe, Trolley)
 from users.models import User

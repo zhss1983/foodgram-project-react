@@ -1,6 +1,5 @@
 import json
 from http import HTTPStatus
-from random import choice, choices, randint
 
 from django.core.cache import cache
 from django.test import TestCase
@@ -50,7 +49,7 @@ class BaseTestCase(TestCase):
         self.anonime = APIClient()
         cache.clear()
 
-    def In_Or_Equ(self, data, name, value=None):
+    def in_or_equ(self, data, name, value=None):
 
         if value:
             self.assertEqual(data.get(name), value)
@@ -60,9 +59,9 @@ class BaseTestCase(TestCase):
     def page_paginated(self, data, count=None, next_page=None, prev_page=None):
         """Проверяет что шапка соответствует постраничной пагинации"""
         self.assertIsInstance(data, dict)
-        self.In_Or_Equ(data, 'count', count)
-        self.In_Or_Equ(data, 'next', next_page)
-        self.In_Or_Equ(data, 'previous', prev_page)
+        self.in_or_equ(data, 'count', count)
+        self.in_or_equ(data, 'next', next_page)
+        self.in_or_equ(data, 'previous', prev_page)
         self.assertIn('results', data)
         results = data.get('results')
         self.assertIsInstance(results, list)
@@ -229,12 +228,12 @@ class UsersTestCase(BaseTestCase):
         параметрами.
         """
         new_user = {
-                'email': 'a'*246 + '@mail.ru',
-                'username': 'b'*150,
-                'first_name': 'c'*150,
-                'last_name': 'd'*150,
-                'password': 'e'*150
-            }
+            'email': 'a' * 246 + '@mail.ru',
+            'username': 'b' * 150,
+            'first_name': 'c' * 150,
+            'last_name': 'd' * 150,
+            'password': 'e' * 150
+        }
         response = self.anonime.post(
             reverse('user-list'),
             data=new_user,

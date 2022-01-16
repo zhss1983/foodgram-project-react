@@ -1,4 +1,4 @@
-from django.db.models import Q, Sum
+from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -101,14 +101,14 @@ class SubscribeViewSet(GenericViewSet, PostDeletGetID):
         if request.method == 'POST':
             if author == self.request.user:
                 return Response(
-                    {"errors": "Ошибка подписки"},
+                    {'errors': 'Ошибка подписки'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             instance, created = Follow.objects.get_or_create(
-                                    user=self.request.user, author=author)
+                user=self.request.user, author=author)
             if not created:
                 return Response(
-                    {"errors": "Ошибка подписки"},
+                    {'errors': 'Ошибка подписки'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             serializer = self.get_serializer(instance.author)
@@ -135,7 +135,6 @@ class RecipeViewSet(ModelViewSet, PostDeletGetID):
     lookup_field = 'id'
     queryset = Recipe.objects.prefetch_related(
         'selected', 'trolley', 'author', 'tags')
-
 
     def get_serializer_class(self):
         if self.request.method == SAFE_METHODS:

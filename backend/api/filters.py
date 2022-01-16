@@ -10,16 +10,17 @@ class RecipeFilter:
     A base class from which all filter backend classes should inherit.
     """
 
-    def get_param_value_views(view, request, parameter_name, default=None):
+    def get_param_value_views(self, request, parameter_name, default=None):
         return request.query_params.get(parameter_name, default)
 
-    def getlist_param_value_views(view, request, parameter_name, default=None):
+    def getlist_param_value_views(self, request, parameter_name, default=None):
         return request.query_params.getlist(parameter_name, default)
 
     def get_bool_by_name(self, request, name):
         value = self.get_param_value_views(request, name)
         if value is not None:
             return value != '0'
+        return None
 
     def get_is_favorited(self, request):
         return self.get_bool_by_name(request, 'is_favorited')
@@ -34,6 +35,7 @@ class RecipeFilter:
                 return get_object_or_404(User, pk=author_id)
             if isinstance(author_id, str):
                 return get_object_or_404(User, username=author_id)
+        return None
 
     def get_tags(self, request):
         return self.getlist_param_value_views(request, 'tags')

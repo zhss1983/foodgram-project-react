@@ -53,7 +53,7 @@ class BaseTestCase(TestCase):
         self.anonime = APIClient()
         cache.clear()
 
-    def In_Or_Equ(self, data, name, value=None):
+    def in_or_equ(self, data, name, value=None):
 
         if value:
             self.assertEqual(data.get(name), value)
@@ -63,9 +63,9 @@ class BaseTestCase(TestCase):
     def page_paginated(self, data, count=None, next_page=None, prev_page=None):
         """Проверяет что шапка соответствует постраничной пагинации"""
         self.assertIsInstance(data, dict)
-        self.In_Or_Equ(data, 'count', count)
-        self.In_Or_Equ(data, 'next', next_page)
-        self.In_Or_Equ(data, 'previous', prev_page)
+        self.in_or_equ(data, 'count', count)
+        self.in_or_equ(data, 'next', next_page)
+        self.in_or_equ(data, 'previous', prev_page)
         self.assertIn('results', data)
         results = data.get('results')
         self.assertIsInstance(results, list)
@@ -757,7 +757,7 @@ class RecipeTestCase(BaseTestCase):
 
         for recipe in all_recipes:
             tags = tuple(tag.tag.slug for tag in TagRecipe.objects.filter(
-                            recipe=recipe).all()[:2])
+                         recipe=recipe).all()[:2])
             is_favorite = 1 if Favorite.objects.filter(
                 recipe=recipe, user=cls.user).exists() else 0
             is_in_shopping_cart = 1 if Trolley.objects.filter(
@@ -968,12 +968,12 @@ class RecipeTestCase(BaseTestCase):
     def test_receipes_patch(self):
         """Проверяет возможность изменения рецепта."""
         recipe = Recipe.objects.create(
-                image=None,
-                author=self.__class__.user,
-                name='Рецепт для изменения',
-                text='Рецепт для изменения',
-                cooking_time=1
-            )
+            image=None,
+            author=self.__class__.user,
+            name='Рецепт для изменения',
+            text='Рецепт для изменения',
+            cooking_time=1
+        )
         url = reverse('recipe-detail', kwargs={'id': recipe.pk})
         ingredient = Ingredient.objects.first()
         tag = Tag.objects.first()
@@ -1052,19 +1052,19 @@ class RecipeTestCase(BaseTestCase):
                         ),
                     ),
                     'tags': (
-                                *(tag.pk for tag in set(choices(
-                                    tags, k=randint(1, tags_count)))),
-                            ),
-                    'image': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAA'
-                             'AUCAIAAAAC64paAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQ'
-                             'UAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAADnSURBVDhPnZFNCsIwEI'
-                             'U9iEvvoUsv5MpbuHDnRnDhUtEjCMWfnbjwAP6BUEGEUExMmTR9mf'
-                             'wUfDzKZOZ97YS2VFJCfLv9fdCz+bWExXL1GY0pzZRtc8agS1iTz3'
-                             'aHTAxpd3ixNHO9tuXpFVIqG+oBgHZgLBK3tY7CRSFZlHmT5dG1tR'
-                             'brBwPQOhD+MtW3u9D/gzHWOhCASXg8nt6D4RnJyfSi++G1yWYQVw'
-                             '3/oWY4sYID+7n0/vzO5lAJO37AwDESm37GgdnMP7JODdMTx6zGI8'
-                             'mBsdAiAG0GlfjawRDJ7xuY1Ag7I6V+eFybE9tlqTkAAAAASUVORK'
-                             '5CYII==',
+                        *(tag.pk for tag in set(
+                            choices(tags, k=randint(1, tags_count)))),
+                    ),
+                    'image': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB'
+                             'QAAAAUCAIAAAAC64paAAAAAXNSR0IArs4c6QAAAARnQU1BAA'
+                             'Cxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAADnSURBVD'
+                             'hPnZFNCsIwEIU9iEvvoUsv5MpbuHDnRnDhUtEjCMWfnbjwAP'
+                             '6BUEGEUExMmTR9mfwUfDzKZOZ97YS2VFJCfLv9fdCz+bWExX'
+                             'L1GY0pzZRtc8agS1iTz3aHTAxpd3ixNHO9tuXpFVIqG+oBgH'
+                             'ZgLBK3tY7CRSFZlHmT5dG1tRbrBwPQOhD+MtW3u9D/gzHWOh'
+                             'CASXg8nt6D4RnJyfSi++G1yWYQVw3/oWY4sYID+7n0/vzO5l'
+                             'AJO37AwDESm37GgdnMP7JODdMTx6zGI8mBsdAiAG0GlfjawR'
+                             'DJ7xuY1Ag7I6V+eFybE9tlqTkAAAAASUVORK5CYII==',
                     'name': f'Изменён {ctime}',
                     'text': f'Изменён {ctime}',
                     'cooking_time': randint(1, 0xffff)
@@ -1079,12 +1079,12 @@ class RecipeTestCase(BaseTestCase):
     def test_receipes_patch_wrong_user(self):
         """Проверяет блокировку изменения чужого рецепта."""
         recipe = Recipe.objects.create(
-                image=None,
-                author=self.__class__.user0,
-                name='Рецепт для изменения без прав',
-                text='Рецепт для изменения без прав',
-                cooking_time=1
-            )
+            image=None,
+            author=self.__class__.user0,
+            name='Рецепт для изменения без прав',
+            text='Рецепт для изменения без прав',
+            cooking_time=1
+        )
         url = reverse('recipe-detail', kwargs={'id': recipe.pk})
         ingredient = Ingredient.objects.first()
         tag = Tag.objects.first()
@@ -1116,18 +1116,17 @@ class RecipeTestCase(BaseTestCase):
             },
             format='json'
         )
-
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_receipes_patch_validation_error(self):
         """Проверяет блокировку изменения рецепта с неверными данными."""
         recipe = Recipe.objects.create(
-                image=None,
-                author=self.__class__.user,
-                name='Рецепт для попытки изменения',
-                text='Рецепт для попытки изменения',
-                cooking_time=1
-            )
+            image=None,
+            author=self.__class__.user,
+            name='Рецепт для попытки изменения',
+            text='Рецепт для попытки изменения',
+            cooking_time=1
+        )
         url = reverse('recipe-detail', kwargs={'id': recipe.pk})
         ingredient = Ingredient.objects.first()
         tag = Tag.objects.first()
@@ -1159,18 +1158,17 @@ class RecipeTestCase(BaseTestCase):
             },
             format='json'
         )
-
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_receipes_patch_anonime(self):
         """Проверяет блокировку изменения рецепта анонимным пользователем."""
         recipe = Recipe.objects.create(
-                image=None,
-                author=self.__class__.user,
-                name='Изменения не авторизованным пользователем',
-                text='Изменения не авторизованным пользователем',
-                cooking_time=1
-            )
+            image=None,
+            author=self.__class__.user,
+            name='Изменения не авторизованным пользователем',
+            text='Изменения не авторизованным пользователем',
+            cooking_time=1
+        )
         url = reverse('recipe-detail', kwargs={'id': recipe.pk})
         ingredient = Ingredient.objects.first()
         tag = Tag.objects.first()
@@ -1245,12 +1243,12 @@ class RecipeTestCase(BaseTestCase):
     def test_receipes_delete(self):
         """Проверяет возможность удаления рецепта."""
         recipe = Recipe.objects.create(
-                image=None,
-                author=self.__class__.user,
-                name='Рецепт для удаления',
-                text='Рецепт для удавления',
-                cooking_time=1
-            )
+            image=None,
+            author=self.__class__.user,
+            name='Рецепт для удаления',
+            text='Рецепт для удавления',
+            cooking_time=1
+        )
         url = reverse('recipe-detail', kwargs={'id': recipe.pk})
         response = self.authorized.delete(url)
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
@@ -1259,12 +1257,12 @@ class RecipeTestCase(BaseTestCase):
     def test_receipes_delete_anonime(self):
         """Проверяет блокировку удаления рецепта анонимным пользователем."""
         recipe = Recipe.objects.create(
-                image=None,
-                author=self.__class__.user,
-                name='Рецепт для удаления анонимно',
-                text='Рецепт для удавления анонимно',
-                cooking_time=1
-            )
+            image=None,
+            author=self.__class__.user,
+            name='Рецепт для удаления анонимно',
+            text='Рецепт для удавления анонимно',
+            cooking_time=1
+        )
         url = reverse('recipe-detail', kwargs={'id': recipe.pk})
         response = self.anonime.delete(url)
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
@@ -1272,12 +1270,12 @@ class RecipeTestCase(BaseTestCase):
     def test_receipes_delete_not_mine(self):
         """Проверяет блокировку удаления чужого рецепта."""
         recipe = Recipe.objects.create(
-                image=None,
-                author=self.__class__.user0,
-                name='Рецепт для удаления чужого рецепта',
-                text='Рецепт для удавления чужого рецепта',
-                cooking_time=1
-            )
+            image=None,
+            author=self.__class__.user0,
+            name='Рецепт для удаления чужого рецепта',
+            text='Рецепт для удавления чужого рецепта',
+            cooking_time=1
+        )
         url = reverse('recipe-detail', kwargs={'id': recipe.pk})
         response = self.authorized.delete(url)
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
@@ -1309,12 +1307,12 @@ class RecipeTestCase(BaseTestCase):
         Проверяет возможность добавления рецепта в список покупок.
         """
         recipe = Recipe.objects.create(
-                    image='test.img',
-                    author=self.__class__.user,
-                    name='Рецепт для добавления в список покупок',
-                    text='Рецепт для добавления в список покупок',
-                    cooking_time=1
-                )
+            image='test.img',
+            author=self.__class__.user,
+            name='Рецепт для добавления в список покупок',
+            text='Рецепт для добавления в список покупок',
+            cooking_time=1
+        )
         url = reverse('recipe-shopping-cart', kwargs={'id': recipe.pk})
         response = self.authorized.post(url)
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
@@ -1350,12 +1348,12 @@ class RecipeTestCase(BaseTestCase):
         Проверяет возможность удаления рецепта из списка покупок.
         """
         recipe = Recipe.objects.create(
-                    image='test.img',
-                    author=self.__class__.user,
-                    name='Рецепт для удаления из списка покупок',
-                    text='Рецепт для удаления из списка покупок',
-                    cooking_time=1
-                )
+            image='test.img',
+            author=self.__class__.user,
+            name='Рецепт для удаления из списка покупок',
+            text='Рецепт для удаления из списка покупок',
+            cooking_time=1
+        )
         trol = Trolley.objects.create(
             recipe_id=recipe.pk,
             user=self.__class__.user
@@ -1388,12 +1386,12 @@ class RecipeTestCase(BaseTestCase):
         Проверяет возможность добавления рецепта в список избранных рецептов.
         """
         recipe = Recipe.objects.create(
-                    image='test.img',
-                    author=self.__class__.user,
-                    name='Рецепт для добавления в список избранного',
-                    text='Рецепт для добавления в список избранного',
-                    cooking_time=1
-                )
+            image='test.img',
+            author=self.__class__.user,
+            name='Рецепт для добавления в список избранного',
+            text='Рецепт для добавления в список избранного',
+            cooking_time=1
+        )
         url = reverse('recipe-favorite', kwargs={'id': recipe.pk})
         response = self.authorized.post(url)
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
@@ -1430,12 +1428,12 @@ class RecipeTestCase(BaseTestCase):
         Проверяет возможность удаления рецепта из списка избранных рецептов.
         """
         recipe = Recipe.objects.create(
-                    image='test.img',
-                    author=self.__class__.user,
-                    name='Рецепт для удаления из списка избранных 2',
-                    text='Рецепт для удаления из списка избранных 2',
-                    cooking_time=1
-                )
+            image='test.img',
+            author=self.__class__.user,
+            name='Рецепт для удаления из списка избранных 2',
+            text='Рецепт для удаления из списка избранных 2',
+            cooking_time=1
+        )
         favorite = Favorite.objects.create(
             recipe_id=recipe.pk,
             user=self.__class__.user
