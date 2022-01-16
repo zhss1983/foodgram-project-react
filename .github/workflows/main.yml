@@ -33,5 +33,5 @@ jobs:
 
     - name: Test with django tests
       run: |
-        cd backend/foodgram/
+        cd foodgram/
         python manage.py test
