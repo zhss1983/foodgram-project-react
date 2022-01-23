@@ -8,7 +8,7 @@ API Foodgram позволяет сохранять свои рецепты и д
 для их приготовления.
 
 Стэк технологий: Python 3.9, Django 3.2.9, DjangoRestFramework, SimpleJWT,
-PostgreSQL, Docker, , Gunicorn 20.0, Nginx 1.21.
+PostgreSQL, Docker, Gunicorn 20.0, Nginx 1.21.
 
 ## Как запустить проект:
 
