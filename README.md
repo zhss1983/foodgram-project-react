@@ -1,5 +1,7 @@
 # [Документация к API Foodgram](http://www.zhss.tk/recipes)
 
+![example workflow](https://github.com/zhss1983/foodgram-project-react/actions/workflows/main.yml/badge.svg)
+
 ## Описание проекта:
 
 API Foodgram позволяет сохранять свои рецепты и делиться ими с друзьями.
