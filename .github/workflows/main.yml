@@ -5,9 +5,8 @@ on:
     branches: [ master ]
 
 jobs:
-  db:
-    runs-on: ubuntu-latest
 
+  tests:
     services:
       postgres:
         image: postgres
@@ -23,9 +22,7 @@ jobs:
         ports:
           - 5432:5432
 
-  tests:
     runs-on: ubuntu-latest
-    needs: db
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 
