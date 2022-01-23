@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get(
     'SECRET_KEY',
-    'django-insecure-f*uc(csx95l66++$&vf2(bamo1ejsa837lo)z7+v&=82cajrft'
+    ''
 )
 
 load_dotenv(os.path.join(BASE_DIR, '.env_db'))
