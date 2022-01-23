@@ -53,7 +53,9 @@ jobs:
           ls -la
           cd ../
           ls -la
-          cd backend/foodgram/
+          cd ./backend
+          ls -la
+          cd ./foodgram
           ls -la
           python manage.py test
         # cd backend/foodgram/
