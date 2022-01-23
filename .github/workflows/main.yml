@@ -71,8 +71,8 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2 # Выполняет push образа в DockerHub
         with:
-          context: backend/
-          file: Dockerfile
+          context: .
+          file: backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram:latest
 
