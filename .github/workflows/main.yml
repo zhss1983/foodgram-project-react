@@ -51,10 +51,10 @@ jobs:
           POSTGRES_DB: ${{ secrets.DB_NAME }}
         run: |
           ls -la
-          cd ../
-          ls -la
+          echo "cd ./backend"
           cd ./backend
           ls -la
+          echo "cd ./foodgram"
           cd ./foodgram
           ls -la
           python manage.py test
