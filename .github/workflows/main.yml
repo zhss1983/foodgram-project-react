@@ -44,6 +44,7 @@ jobs:
 
       - name: Test with django tests
         env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DB_HOST: localhost
           DB_PORT: 5432
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
