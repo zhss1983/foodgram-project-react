@@ -1,4 +1,4 @@
-# [Документация к API Foodgram](http://www.zhss.tk/recipes)
+# Документация к API Foodgram
 
 ![example workflow](https://github.com/zhss1983/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 
