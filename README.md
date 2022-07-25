@@ -79,7 +79,8 @@ docker-compose up -d
 ## Работа с эндпоинтами:
 
 Краткое описание основных возможностей, за более подробной информацией
-обратитесь к [/redoc/](https://github.com/zhss1983/foodgram-project-react/tree/master/docs/redoc.html) 
+ обратитесь к [/redoc/](https://github.com/zhss1983/foodgram-project-react/tree/master/docs/redoc.html) 
+ ([yml](https://github.com/zhss1983/foodgram-project-react/tree/master/docs/openapi-schema.yml)). 
 
 По всем вопросам обращайтесь к администраторам по электронной почте
-[zhss.83@yandex.ru](mailto:zhss.83@yandex.ru)
+ [zhss.83@yandex.ru](mailto:zhss.83@yandex.ru)
