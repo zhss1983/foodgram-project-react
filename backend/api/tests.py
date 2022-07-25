@@ -6,19 +6,13 @@ from time import time
 from django.core.cache import cache
 from django.test import TestCase
 from django.urls import reverse
+
 from rest_framework.test import APIClient
 
-from .models import (
-    Amount,
-    Favorite,
-    Follow,
-    Ingredient,
-    Recipe,
-    Tag,
-    TagRecipe,
-    Trolley,
-)
 from users.models import User
+
+from .models import (Amount, Favorite, Follow, Ingredient, Recipe, Tag,
+                     TagRecipe, Trolley)
 
 
 class BaseTestCase(TestCase):

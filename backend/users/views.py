@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+
 from djoser import views
 
 User = get_user_model()

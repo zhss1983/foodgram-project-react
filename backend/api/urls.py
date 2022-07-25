@@ -1,7 +1,9 @@
 from django.urls import include, path
+
 from rest_framework.routers import DefaultRouter
 
-from .views import IngredientViewSet, RecipeViewSet, SubscribeViewSet, TagViewSet
+from .views import (IngredientViewSet, RecipeViewSet, SubscribeViewSet,
+                    TagViewSet)
 
 api_rout_v1 = DefaultRouter()
 api_rout_v1.register(r"tags", TagViewSet, basename="tag")

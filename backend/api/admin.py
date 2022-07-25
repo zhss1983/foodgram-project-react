@@ -1,16 +1,8 @@
 from django.contrib import admin
 
-from .models import (
-    Tag,
-    Follow,
-    Ingredient,
-    Amount,
-    Recipe,
-    Favorite,
-    TagRecipe,
-    Trolley,
-)
 from .forms import TagForm
+from .models import (Amount, Favorite, Follow, Ingredient, Recipe, Tag,
+                     TagRecipe, Trolley)
 
 EMPTY = "-пусто-"
 
