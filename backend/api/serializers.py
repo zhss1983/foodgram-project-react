@@ -2,14 +2,8 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField  # noqa
 from rest_framework.fields import IntegerField, ReadOnlyField
-from rest_framework.serializers import (
-    CurrentUserDefault,
-    ModelSerializer,
-    SerializerMethodField,
-    ValidationError,
-)
+from rest_framework.serializers import CurrentUserDefault, ModelSerializer, SerializerMethodField, ValidationError  # noqa
 
-# noqa
 from .models import (
     Amount,
     Favorite,
