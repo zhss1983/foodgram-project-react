@@ -6,18 +6,16 @@ User = get_user_model()
 
 
 class UserCreateSerializer(UserCreateSerializer):
-
     class Meta:
         model = User
         fields = tuple(User.REQUIRED_FIELDS) + (
             settings.LOGIN_FIELD,
-            "password", 'username',
+            "password",
+            "username",
         )
 
 
 class UseridSerializer(UserCreateSerializer):
-
     class Meta:
         model = User
-        fields = tuple(User.REQUIRED_FIELDS) + (
-            'username', settings.USER_ID_FIELD)
+        fields = tuple(User.REQUIRED_FIELDS) + ("username", settings.USER_ID_FIELD)

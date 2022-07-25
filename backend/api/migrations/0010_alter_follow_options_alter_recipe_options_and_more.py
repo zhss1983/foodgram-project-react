@@ -6,21 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0009_alter_recipe_options'),
+        ("api", "0009_alter_recipe_options"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='follow',
-            options={'ordering': ('user__username', 'author__username'), 'verbose_name': 'Подписка на автора', 'verbose_name_plural': 'Подписки на авторов'},
+            name="follow",
+            options={
+                "ordering": ("user__username", "author__username"),
+                "verbose_name": "Подписка на автора",
+                "verbose_name_plural": "Подписки на авторов",
+            },
         ),
         migrations.AlterModelOptions(
-            name='recipe',
-            options={'ordering': ('-pk',), 'verbose_name': 'Рецепт', 'verbose_name_plural': 'Рецепты'},
+            name="recipe",
+            options={
+                "ordering": ("-pk",),
+                "verbose_name": "Рецепт",
+                "verbose_name_plural": "Рецепты",
+            },
         ),
         migrations.AlterField(
-            model_name='recipe',
-            name='image',
-            field=models.ImageField(help_text='Загрузите изображение', upload_to='Recipe/', verbose_name='Картинка'),
+            model_name="recipe",
+            name="image",
+            field=models.ImageField(
+                help_text="Загрузите изображение",
+                upload_to="Recipe/",
+                verbose_name="Картинка",
+            ),
         ),
     ]

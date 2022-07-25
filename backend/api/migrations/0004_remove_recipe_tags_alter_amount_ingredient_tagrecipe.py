@@ -7,30 +7,59 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0003_remove_recipe_ingredients_alter_amount_ingredient_and_more'),
+        ("api", "0003_remove_recipe_ingredients_alter_amount_ingredient_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='recipe',
-            name='tags',
+            model_name="recipe",
+            name="tags",
         ),
         migrations.AlterField(
-            model_name='amount',
-            name='ingredient',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='amounts', to='api.ingredient', verbose_name='Ингредиент'),
+            model_name="amount",
+            name="ingredient",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="amounts",
+                to="api.ingredient",
+                verbose_name="Ингредиент",
+            ),
         ),
         migrations.CreateModel(
-            name='TagRecipe',
+            name="TagRecipe",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tags', to='api.recipe', verbose_name='Рецепт')),
-                ('tag', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tagrecipes', to='api.tag', verbose_name='Тэги')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "recipe",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tags",
+                        to="api.recipe",
+                        verbose_name="Рецепт",
+                    ),
+                ),
+                (
+                    "tag",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tagrecipes",
+                        to="api.tag",
+                        verbose_name="Тэги",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Тэг рецепта',
-                'verbose_name_plural': 'Тэги рецептов',
-                'ordering': ('recipe__name', 'tag__name'),
+                "verbose_name": "Тэг рецепта",
+                "verbose_name_plural": "Тэги рецептов",
+                "ordering": ("recipe__name", "tag__name"),
             },
         ),
     ]

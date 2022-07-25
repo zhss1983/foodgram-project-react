@@ -8,13 +8,17 @@ class User(AbstractUser):
     AbstractUser.first_name.max_length = 150
     AbstractUser.last_name.max_length = 150
 
-    REQUIRED_FIELDS = ('email', 'first_name', 'last_name',)
+    REQUIRED_FIELDS = (
+        "email",
+        "first_name",
+        "last_name",
+    )
 
     objects = CustomUserManager()
 
     class Meta:
-        verbose_name = _('Пользователь')
-        verbose_name_plural = _('Пользователи')
+        verbose_name = _("Пользователь")
+        verbose_name_plural = _("Пользователи")
 
     def __str__(self):
         return self.username

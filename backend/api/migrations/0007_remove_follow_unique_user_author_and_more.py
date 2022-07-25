@@ -6,46 +6,56 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0006_alter_recipe_options_recipe_pub_date'),
+        ("api", "0006_alter_recipe_options_recipe_pub_date"),
     ]
 
     operations = [
         migrations.RemoveConstraint(
-            model_name='follow',
-            name='unique_user_author',
+            model_name="follow",
+            name="unique_user_author",
         ),
         migrations.AlterField(
-            model_name='recipe',
-            name='cooking_time',
-            field=models.IntegerField(default=1, verbose_name='Время приготовления, мин'),
+            model_name="recipe",
+            name="cooking_time",
+            field=models.IntegerField(
+                default=1, verbose_name="Время приготовления, мин"
+            ),
         ),
         migrations.AlterField(
-            model_name='recipe',
-            name='image',
-            field=models.ImageField(help_text='Загрузите изображение. Оптимальный размер xxx*yyy px.', upload_to='Recipe/', verbose_name='Картинка'),
+            model_name="recipe",
+            name="image",
+            field=models.ImageField(
+                help_text="Загрузите изображение. Оптимальный размер xxx*yyy px.",
+                upload_to="Recipe/",
+                verbose_name="Картинка",
+            ),
         ),
         migrations.AlterField(
-            model_name='recipe',
-            name='name',
-            field=models.CharField(max_length=200, unique=True, verbose_name='Название'),
+            model_name="recipe",
+            name="name",
+            field=models.CharField(
+                max_length=200, unique=True, verbose_name="Название"
+            ),
         ),
         migrations.AlterField(
-            model_name='recipe',
-            name='text',
-            field=models.TextField(verbose_name='Текстовое описание'),
+            model_name="recipe",
+            name="text",
+            field=models.TextField(verbose_name="Текстовое описание"),
         ),
         migrations.AlterField(
-            model_name='tag',
-            name='color',
-            field=models.CharField(max_length=7, verbose_name='Цвет тега'),
+            model_name="tag",
+            name="color",
+            field=models.CharField(max_length=7, verbose_name="Цвет тега"),
         ),
         migrations.AlterField(
-            model_name='tag',
-            name='slug',
-            field=models.SlugField(unique=True, verbose_name='Адрес тега'),
+            model_name="tag",
+            name="slug",
+            field=models.SlugField(unique=True, verbose_name="Адрес тега"),
         ),
         migrations.AddConstraint(
-            model_name='follow',
-            constraint=models.UniqueConstraint(fields=('user', 'author'), name='Follow_unique_user_author'),
+            model_name="follow",
+            constraint=models.UniqueConstraint(
+                fields=("user", "author"), name="Follow_unique_user_author"
+            ),
         ),
     ]

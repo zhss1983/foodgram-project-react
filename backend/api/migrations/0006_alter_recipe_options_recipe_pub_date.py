@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0005_trolley_favorite_favorite_unique_user_recipe_pair_and_more'),
+        ("api", "0005_trolley_favorite_favorite_unique_user_recipe_pair_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='recipe',
-            options={'ordering': ('-pub_date',), 'verbose_name': 'Рецепт', 'verbose_name_plural': 'Рецепты'},
+            name="recipe",
+            options={
+                "ordering": ("-pub_date",),
+                "verbose_name": "Рецепт",
+                "verbose_name_plural": "Рецепты",
+            },
         ),
         migrations.AddField(
-            model_name='recipe',
-            name='pub_date',
-            field=models.DateTimeField(auto_now_add=True, default='2020-11-14 15:43:32.24', verbose_name='Дата публикации'),
+            model_name="recipe",
+            name="pub_date",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default="2020-11-14 15:43:32.24",
+                verbose_name="Дата публикации",
+            ),
             preserve_default=False,
         ),
     ]

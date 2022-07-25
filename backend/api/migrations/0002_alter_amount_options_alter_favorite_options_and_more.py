@@ -7,34 +7,60 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0001_initial'),
+        ("api", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='amount',
-            options={'ordering': ('recipe__name', 'ingredient__name'), 'verbose_name': 'Количество', 'verbose_name_plural': 'Количество'},
+            name="amount",
+            options={
+                "ordering": ("recipe__name", "ingredient__name"),
+                "verbose_name": "Количество",
+                "verbose_name_plural": "Количество",
+            },
         ),
         migrations.AlterModelOptions(
-            name='favorite',
-            options={'ordering': ('user__username', 'recipe__name'), 'verbose_name': 'Избранный рецепт', 'verbose_name_plural': 'Избранные рецепты'},
+            name="favorite",
+            options={
+                "ordering": ("user__username", "recipe__name"),
+                "verbose_name": "Избранный рецепт",
+                "verbose_name_plural": "Избранные рецепты",
+            },
         ),
         migrations.AlterModelOptions(
-            name='ingredient',
-            options={'ordering': ('name',), 'verbose_name': 'Ингредиент', 'verbose_name_plural': 'Ингредиенты'},
+            name="ingredient",
+            options={
+                "ordering": ("name",),
+                "verbose_name": "Ингредиент",
+                "verbose_name_plural": "Ингредиенты",
+            },
         ),
         migrations.AlterModelOptions(
-            name='recipe',
-            options={'ordering': ('name',), 'verbose_name': 'Рецепт', 'verbose_name_plural': 'Рецепты'},
+            name="recipe",
+            options={
+                "ordering": ("name",),
+                "verbose_name": "Рецепт",
+                "verbose_name_plural": "Рецепты",
+            },
         ),
         migrations.AlterField(
-            model_name='amount',
-            name='ingredient',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='amounts', to='api.ingredient', verbose_name='Ингредиент'),
+            model_name="amount",
+            name="ingredient",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="amounts",
+                to="api.ingredient",
+                verbose_name="Ингредиент",
+            ),
         ),
         migrations.AlterField(
-            model_name='amount',
-            name='recipe',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='amounts', to='api.recipe', verbose_name='Рецепт'),
+            model_name="amount",
+            name="recipe",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="amounts",
+                to="api.recipe",
+                verbose_name="Рецепт",
+            ),
         ),
     ]
