@@ -9,9 +9,9 @@ from users.setup import DJOSER, SIMPLE_JWT  # noqa isort:skip
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "")
 
-load_dotenv(os.path.join(BASE_DIR, ".env_db"))
-load_dotenv(os.path.join(BASE_DIR, ".env_mail"))
-load_dotenv(os.path.join(BASE_DIR, ".env_web"))
+load_dotenv(BASE_DIR / ".env_db")
+load_dotenv(BASE_DIR / ".env_mail")
+load_dotenv(BASE_DIR / ".env_web")
 
 DEBUG = False
 
