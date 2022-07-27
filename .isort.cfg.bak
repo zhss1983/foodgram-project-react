@@ -1,5 +1,0 @@
-[isort]
-default_section = THIRDPARTY
-known_first_party = backend,api,frontend,users
-known_django = django
-sections = FUTURE,STDLIB,DJANGO,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
