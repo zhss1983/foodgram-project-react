@@ -8,7 +8,7 @@ API Foodgram позволяет сохранять свои рецепты и д
  избранные рецепты или подписаться на друзей, можно собрать корзину и выгрузить список того что требуется купить для их
  приготовления.
 
-Стэк технологий:
+Стек технологий:
  **Python 3.9,
  [Django 3.2.9](https://docs.djangoproject.com/en/4.0/),
  [DjangoRestFramework](https://www.django-rest-framework.org),
